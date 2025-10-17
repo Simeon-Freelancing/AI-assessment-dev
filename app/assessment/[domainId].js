@@ -5,8 +5,9 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Button,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, useSearchParams } from "expo-router";
 import { useAssessment } from "../../contexts/AssessmentContext";
 import { DOMAINS } from "../../data/domains";
 import { QUESTIONS } from "../../data/questions";
@@ -91,6 +92,19 @@ export default function DomainAssessment() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <View style={styles.placeholderContainer}>
+        <Text style={styles.placeholderTitle}>Assessment</Text>
+        <Text style={styles.meta}>Domain ID: {domainId}</Text>
+        {/* {orgId && <Text style={styles.meta}>Organization ID: {orgId}</Text>} */}
+
+        <View style={{ marginTop: 20 }}>
+          <Text style={styles.note}>
+            This is a lightweight placeholder. Implement the assessment flow here.
+          </Text>
+          <Button title="Finish (simulate complete)" onPress={() => router.replace('/results')} />
+        </View>
+      </View>
     </View>
   );
 }
@@ -145,5 +159,23 @@ const styles = StyleSheet.create({
   },
   nextButtonText: {
     color: "#fff",
+  },
+  placeholderContainer: {
+    padding: 16,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+  },
+  placeholderTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1a365d",
+  },
+  note: {
+    color: "#6b7280",
+  },
+  meta: {
+    marginTop: 8,
+    color: "#374151",
   },
 });

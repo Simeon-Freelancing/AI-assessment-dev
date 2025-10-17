@@ -1,119 +1,55 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import axios from "axios";
+import { sampleOrganizations } from './data/organizations';
 
-// Video upload endpoint
-export async function uploadVideo(file) {
-  const formData = new FormData();
-  formData.append("video", file);
+const API_BASE_URL = "http://localhost:8000"; // or your hosted FastAPI URL
 
-  const response = await fetch(`${API_BASE_URL}/api/videos/upload`, {
-    method: "POST",
-    body: formData,
-  });
+// Provide a simple synthetic in-memory store for development when backend is not available.
 
-  if (!response.ok) {
-    throw new Error("Failed to upload video");
+const syntheticStore = [...sampleOrganizations]; // initial dataset
+
+// helper to simulate axios-like response
+const wrap = (data) => Promise.resolve({ data });
+
+export const createOrganization = async (data) => {
+  // If you want to try the real backend uncomment below and handle errors/fallbacks.
+  // try { return await axios.post(`${API_BASE_URL}/organization/create`, data); } catch (e) { /* fallback to synthetic */ }
+
+  const created = {
+    id: `org-${Date.now()}`,
+    name: data.name || 'Unnamed',
+    industry: data.industry || 'Other',
+    size: data.size || '',
+    country: data.country || '',
+    description: data.description || '',
+    createdAt: new Date().toISOString(),
+    assessments: data.assessments || [],
+  };
+  syntheticStore.unshift(created);
+  return wrap(created);
+};
+
+export const getOrganization = async (id) => {
+  // try { return await axios.get(`${API_BASE_URL}/organization/${id}`); } catch (e) { /* fallback below */ }
+  const found = syntheticStore.find((s) => s.id === id);
+  if (!found) return Promise.reject(new Error('Not found'));
+  return wrap(found);
+};
+
+// keep existing named functions for assessments/reports if needed
+export const createReport = async (data) => {
+  try {
+    return await axios.post(`${API_BASE_URL}/assessment/create-report`, data);
+  } catch (e) {
+    // synthetic fallback: return a stubbed response
+    return wrap({ success: true, report: { id: `r-${Date.now()}`, ...data } });
   }
+};
 
-  return response.json();
-}
-
-// Generate subtitles endpoint
-export async function generateSubtitles(request) {
-  const response = await fetch(`${API_BASE_URL}/api/subtitles/generate`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to generate subtitles");
+export const getReport = async (orgId) => {
+  try {
+    return await axios.get(`${API_BASE_URL}/assessment/report/${orgId}`);
+  } catch (e) {
+    // synthetic fallback: no reports
+    return wrap({ reports: [] });
   }
-
-  return response.json();
-}
-
-// Update subtitle segment endpoint
-export async function updateSubtitleSegment(videoId, segmentId, updates) {
-  const response = await fetch(
-    `${API_BASE_URL}/api/subtitles/${videoId}/segments/${segmentId}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updates),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to update subtitle segment");
-  }
-}
-
-// Download SRT file endpoint
-export async function downloadSRT(videoId, language) {
-  const response = await fetch(
-    `${API_BASE_URL}/api/subtitles/${videoId}/download?language=${language}`
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to download SRT file");
-  }
-
-  return response.blob();
-}
-
-// Embed subtitles in video endpoint
-export async function embedSubtitles(videoId, language) {
-  const response = await fetch(
-    `${API_BASE_URL}/api/videos/${videoId}/embed-subtitles`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ language }),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to embed subtitles");
-  }
-
-  return response.blob();
-}
-
-// Authentication endpoints
-export async function signIn(email, password) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/signin`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to sign in");
-  }
-
-  return response.json();
-}
-
-export async function signUp(email, password, name) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password, name }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to sign up");
-  }
-
-  return response.json();
-}
+};

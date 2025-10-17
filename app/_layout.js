@@ -20,8 +20,8 @@ export default function RootLayout() {
         <Stack.Screen
           name="index"
           options={{
-            title: "AI Readiness Evaluation",
-            headerShown: true,
+            title: "Dashboard", // changed from "AI Readiness Evaluation"
+            headerShown: false, // hide default header so index can render a custom admin header
           }}
         />
         <Stack.Screen
