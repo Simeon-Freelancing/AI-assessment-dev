@@ -11,6 +11,7 @@ web-build/
 assets/
 metro-cache/
 .metro-cache-*/
+.env
 
 
 

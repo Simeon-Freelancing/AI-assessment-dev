@@ -1,15 +1,17 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAssessment } from '../contexts/AssessmentContext';
 import { DOMAINS } from '../data/domains';
 import ScoreGauge from '../components/ScoreGauge';
 import InsightCard from '../components/InsightCard';
 import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '../utils/scoring';
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
 
 export default function Results() {
   const router = useRouter();
-  const { responses, resetAssessment } = useAssessment();
+  const { responses, resetAssessment, generateReport, buildReportPayload } = useAssessment();
 
   const overallScore = calculateOverallScore(responses);
   const readinessLevel = getReadinessLevel(overallScore);
@@ -21,6 +23,9 @@ export default function Results() {
 
   const strengths = domainScores.filter(d => d.score >= 4.0).slice(0, 3);
   const weaknesses = domainScores.filter(d => d.score < 3.0 && d.score > 0).slice(0, 3);
+
+  const [generating, setGenerating] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const getRecommendations = () => {
     const recs = [];
@@ -50,12 +55,71 @@ export default function Results() {
     return recs;
   };
 
-  const handleGenerateReport = () => {
-    Alert.alert(
-      'Report Generation',
-      'Your comprehensive AI Readiness Report is being generated. This includes executive summary, detailed analysis, and action plans.',
-      [{ text: 'OK' }]
-    );
+  const handleGenerateReport = async () => {
+    setErrorMsg(null);
+    setGenerating(true);
+    try {
+      // Use context helper which builds payload and calls api.createReport
+      const report = await generateReport();
+
+      // Build a simple HTML representation for the PDF
+      const html = `
+        <html>
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+              body { font-family: -apple-system, Roboto, 'Helvetica Neue', Arial; color: #0f172a; padding: 24px; }
+              h1 { color: #1a365d; }
+              .section { margin-top: 18px; }
+              .domain { margin-top: 10px; padding: 10px; border: 1px solid #e6eef8; border-radius: 6px; background: #fff; }
+              .small { color: #64748b; font-size: 12px; }
+            </style>
+          </head>
+          <body>
+            <h1>AI Readiness Report</h1>
+            <p class="small">Organization: ${report.organization_id || ''}</p>
+            <h2>Executive Summary</h2>
+            <p>${report.executive_summary || ''}</p>
+
+            <div class="section">
+              <h3>Overall</h3>
+              <p>Score: ${report.overall_score || ''} — Level: ${report.readiness_level || ''}</p>
+            </div>
+
+            <div class="section">
+              <h3>Domain Results</h3>
+              ${ (report.domain_results || []).map(d => `
+                <div class="domain">
+                  <strong>${d.domain_name}</strong>
+                  <p class="small">Average score: ${d.average_score}</p>
+                  <p><strong>Strengths:</strong> ${(d.strengths || []).join(', ') || 'None'}</p>
+                  <p><strong>Weaknesses:</strong> ${(d.weaknesses || []).join(', ') || 'None'}</p>
+                  <p><strong>Recommendations:</strong> ${(d.recommendations || []).join('; ')}</p>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="section">
+              <h3>Action Plan</h3>
+              <p><strong>Short term:</strong> ${(report.action_plan?.short_term || []).join(', ')}</p>
+              <p><strong>Medium term:</strong> ${(report.action_plan?.medium_term || []).join(', ')}</p>
+              <p><strong>Long term:</strong> ${(report.action_plan?.long_term || []).join(', ')}</p>
+            </div>
+          </body>
+        </html>
+      `;
+
+      // create PDF file
+      const file = await Print.printToFileAsync({ html });
+      // share / open the pdf
+      await shareAsync(file.uri, { mimeType: 'application/pdf' });
+
+    } catch (err) {
+      console.warn('report generation error', err);
+      setErrorMsg(err?.message || 'Failed to generate report. Please try again.');
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const handleRestart = () => {
@@ -77,6 +141,12 @@ export default function Results() {
 
   return (
     <ScrollView style={styles.container}>
+      {errorMsg && (
+        <View style={styles.errorCard}>
+          <Text style={styles.errorText}>Error: {errorMsg}</Text>
+        </View>
+      )}
+
       <View style={styles.scoreSection}>
         <Text style={styles.title}>Your AI Readiness Score</Text>
         <ScoreGauge score={overallScore} size={160} />
@@ -129,8 +199,15 @@ export default function Results() {
       </View>
 
       <View style={styles.actionsSection}>
-        <TouchableOpacity style={styles.primaryButton} onPress={handleGenerateReport}>
-          <Text style={styles.primaryButtonText}>📄 Generate Full Report</Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={handleGenerateReport} disabled={generating}>
+          {generating ? (
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator color="#fff" style={{ marginRight: 8 }} />
+              <Text style={styles.primaryButtonText}>Generating report...</Text>
+            </View>
+          ) : (
+            <Text style={styles.primaryButtonText}>📄 Generate Full Report</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/dashboard')}>
@@ -151,6 +228,15 @@ export default function Results() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
+  errorCard: {
+    backgroundColor: '#fee2e2',
+    borderLeftWidth: 4,
+    borderLeftColor: '#dc2626',
+    padding: 12,
+    margin: 12,
+    borderRadius: 6,
+  },
+  errorText: { color: '#991b1b', fontWeight: '700' },
   scoreSection: { backgroundColor: '#fff', padding: 24, alignItems: 'center' },
   title: { fontSize: 24, fontWeight: '700', color: '#1a365d', marginBottom: 20 },
   readinessLevel: { fontSize: 28, fontWeight: '700', marginTop: 16, marginBottom: 8 },

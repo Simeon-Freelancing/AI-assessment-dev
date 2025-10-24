@@ -20,8 +20,8 @@ export default function RootLayout() {
         <Stack.Screen
           name="index"
           options={{
-            title: "Dashboard", // changed from "AI Readiness Evaluation"
-            headerShown: false, // hide default header so index can render a custom admin header
+            title: "Home", // changed from "AI Readiness Evaluation"
+            headerShown: true, // hide default header so index can render a custom admin header
           }}
         />
         <Stack.Screen
@@ -56,6 +56,14 @@ export default function RootLayout() {
           name="ai-assistant"
           options={{
             title: "AI Assistant",
+            headerShown: true,
+          }}
+        />
+
+        <Stack.Screen
+          name="details"
+          options={{
+            title: "Organization Details",
             headerShown: true,
           }}
         />

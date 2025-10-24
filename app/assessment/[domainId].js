@@ -1,181 +1,240 @@
-import React, { useState, useEffect } from "react";
+// ...existing code...
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
-  Button,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
-import { useRouter, useLocalSearchParams, useSearchParams } from "expo-router";
-import { useAssessment } from "../../contexts/AssessmentContext";
-import { DOMAINS } from "../../data/domains";
-import { QUESTIONS } from "../../data/questions";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import QuestionCard from "../../components/QuestionCard";
-import ProgressBar from "../../components/ProgressBar";
-import { getCompletionPercentage } from "../../utils/scoring";
+import { QUESTIONS } from "../../data/questions";
+import { DOMAINS } from "../../data/domains";
+import { getResponses, createResponse, updateResponse } from "../../lib/api";
+import { useAssessment } from "../../contexts/AssessmentContext";
+// ...existing code...
 
 export default function DomainAssessment() {
+  const params = useLocalSearchParams();
   const router = useRouter();
-  const { domainId } = useLocalSearchParams();
-  const domainIndex = parseInt(domainId); // string → number
-  console.log("The domain index ", domainId)
-  const { responses, updateResponse } = useAssessment();
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const domainIdRaw = params?.domainId;
+  const domainIndex = Number(domainIdRaw); // numeric domain index
+  const assessmentId = params?.assessmentId
+    ? Number(params.assessmentId)
+    : null;
+  const domain = DOMAINS.find((d) => d.id === domainIndex);
 
-  const domain = DOMAINS.find(d => d.id === domainIndex);
+  const { responses, comments, updateResponse, updateComment } =
+    useAssessment();
+
+  const [loadingSave, setLoadingSave] = useState(false);
+
+  // Load persisted responses for this assessment into context (one-time / when assessmentId changes)
+  useEffect(() => {
+    const load = async () => {
+      if (!assessmentId) return;
+      try {
+        const { data } = await getResponses(assessmentId);
+        if (data && Array.isArray(data)) {
+          // populate context responses/comments
+          data.forEach((r) => {
+            // r.question_id and r.score expected
+            if (r.question_id != null) {
+              updateResponse(r.question_id, r.score != null ? r.score : null);
+            }
+            if (r.question_id != null && r.comments != null) {
+              updateComment(r.question_id, r.comments);
+            }
+          });
+        }
+      } catch (err) {
+        console.warn("Failed to load responses:", err);
+      }
+    };
+    load();
+  }, [assessmentId]);
+
+  // Save (upsert) all responses for this domain
+  const handleSaveChanges = async () => {
+    if (!assessmentId) {
+      Alert.alert("Save failed", "No assessmentId provided.");
+      return;
+    }
+    setLoadingSave(true);
+    try {
+      const { data: existing = [] } = await getResponses(assessmentId);
+      const existingByQuestion = {};
+      existing.forEach((r) => {
+        existingByQuestion[r.question_id] = r;
+      });
+
+      const domainQuestions = QUESTIONS[domainIndex] || [];
+
+      const ops = domainQuestions.map((q) => {
+        const qid = q.id;
+        const score = responses[qid] != null ? responses[qid] : null;
+        const comment = comments[qid] || "";
+        const existingRow = existingByQuestion[qid];
+
+        if (existingRow) {
+          // update existing row
+          return updateResponse(existingRow.id, { score, comments: comment });
+        } else {
+          // create new row
+          return createResponse({
+            assessment_id: assessmentId,
+            question_id: qid,
+            domain_id: domainIndex,
+            score,
+            comments: comment,
+          });
+        }
+      });
+
+      await Promise.all(ops);
+      // reload and sync context
+      const { data: refreshed = [] } = await getResponses(assessmentId);
+      refreshed.forEach((r) => {
+        if (r.question_id != null)
+          updateResponse(r.question_id, r.score != null ? r.score : null);
+        if (r.question_id != null && r.comments != null)
+          updateComment(r.question_id, r.comments);
+      });
+
+      Alert.alert("Saved", "Responses saved successfully.");
+    } catch (err) {
+      console.warn("Save error:", err);
+      Alert.alert("Save failed", "An error occurred while saving.");
+    } finally {
+      setLoadingSave(false);
+    }
+  };
+
+  const handlePrevDomain = () => {
+    const prev = domainIndex - 1;
+    if (prev >= 1) {
+      router.push(
+        `assessment/${prev}${assessmentId ? `?assessmentId=${assessmentId}` : ""}`
+      );
+    }
+  };
+
+  const handleNextDomain = () => {
+    const next = domainIndex + 1;
+    // If there is a next domain, navigate. You may want to check DOMAINS length if available.
+    router.push(
+      `assessment/${next}${assessmentId ? `?assessmentId=${assessmentId}` : ""}`
+    );
+  };
+
   const questions = QUESTIONS[domainIndex] || [];
-  const currentQuestion = questions[currentQuestionIndex];
-  const completion = getCompletionPercentage(responses);
 
-  const handleScoreChange = (score) => {
-    updateResponse(currentQuestion.id, score);
-  };
-
-  const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else if (domainIndex < DOMAINS.length) {
-      router.push(`/assessment/${domainIndex + 1}`);
-    } else {
-      router.push("/results");
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    } else if (domainIndex > 1) {
-      router.push(`/assessment/${domainIndex - 1}`);
-    }
-  };
-  console.log("The amount of responses", Object.keys(responses).length);
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.domainName}>{domain?.name}</Text>
-          <Text style={styles.questionNumber}>
-            Question {currentQuestionIndex + 1} of {questions.length}
-          </Text>
-        </View>
+      <Text style={styles.title}>{domain?.name}</Text>
 
-        <ProgressBar percentage={completion} />
-
-        {currentQuestion && (
+      <ScrollView style={styles.questionsContainer}>
+        {questions.map((question) => (
           <QuestionCard
-            question={currentQuestion}
-            currentScore={responses[currentQuestion.id]}
-            onScoreChange={handleScoreChange}
+            key={question.id}
+            question={question}
+            // keep each question title inside QuestionCard
+            currentScore={responses[question.id]}
+            currentComment={comments[question.id]}
+            onScoreChange={(score) => updateResponse(question.id, score)}
+            onCommentChange={(text) => updateComment(question.id, text)}
           />
-        )}
+        ))}
 
-        <View style={styles.navigationButtons}>
-          <TouchableOpacity
-            style={[styles.navButton, styles.prevButton]}
-            onPress={handlePrevious}
-            disabled={domainIndex === 1 && currentQuestionIndex === 0}
-          >
-            <Text style={styles.navButtonText}>← Previous</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.navButton, styles.nextButton]}
-            onPress={handleNext}
-          >
-            <Text style={[styles.navButtonText, styles.nextButtonText]}>
-              {domainIndex === DOMAINS.length &&
-              currentQuestionIndex === questions.length - 1
-                ? "View Results"
-                : "Next →"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={[styles.saveButton]}
+          onPress={handleSaveChanges}
+          disabled={loadingSave}
+        >
+          <Text style={styles.saveButtonText}>
+            {loadingSave ? "Saving..." : "Save changes"}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
 
-      <View style={styles.placeholderContainer}>
-        <Text style={styles.placeholderTitle}>Assessment</Text>
-        <Text style={styles.meta}>Domain ID: {domainId}</Text>
-        {/* {orgId && <Text style={styles.meta}>Organization ID: {orgId}</Text>} */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.navButton, styles.prevButton]}
+          onPress={handlePrevDomain}
+          disabled={domainIndex <= 1}
+        >
+          <Text style={styles.navButtonText}>← Previous</Text>
+        </TouchableOpacity>
 
-        <View style={{ marginTop: 20 }}>
-          <Text style={styles.note}>
-            This is a lightweight placeholder. Implement the assessment flow here.
+        <TouchableOpacity
+          style={[styles.navButton, styles.nextButton]}
+          onPress={handleNextDomain}
+        >
+          <Text style={[styles.navButtonText, styles.nextButtonText]}>
+            Next →
           </Text>
-          <Button title="Finish (simulate complete)" onPress={() => router.replace('/results')} />
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
+// ...existing code...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     backgroundColor: "#f8fafc",
   },
-  scrollView: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    marginBottom: 16,
-  },
-  domainName: {
-    fontSize: 24,
+  title: {
+    fontSize: 22,
     fontWeight: "700",
     color: "#1a365d",
-    marginBottom: 4,
+    marginBottom: 12,
   },
-  questionNumber: {
-    fontSize: 14,
-    color: "#64748b",
+  questionsContainer: {
+    flex: 1,
   },
-  navigationButtons: {
+  footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 24,
-    marginBottom: 32,
+    marginTop: 12,
+    paddingVertical: 12,
   },
   navButton: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 8,
     marginHorizontal: 6,
-  },
-  prevButton: {
+    alignItems: "center",
     backgroundColor: "#fff",
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "#cbd5e1",
   },
+  prevButton: {},
   nextButton: {
     backgroundColor: "#0891b2",
   },
   navButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
-    textAlign: "center",
-    color: "#64748b",
+    color: "#1f2937",
   },
   nextButtonText: {
     color: "#fff",
   },
-  placeholderContainer: {
-    padding: 16,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
+  saveButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginHorizontal: 6,
+    alignItems: "center",
+    backgroundColor: "#f59e0b",
   },
-  placeholderTitle: {
-    fontSize: 18,
+  saveButtonText: {
+    color: "#fff",
     fontWeight: "700",
-    color: "#1a365d",
-  },
-  note: {
-    color: "#6b7280",
-  },
-  meta: {
-    marginTop: 8,
-    color: "#374151",
   },
 });

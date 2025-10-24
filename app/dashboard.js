@@ -1,26 +1,63 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAssessment } from '../contexts/AssessmentContext';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { getAssessment, getResponses, createAssessment } from '../lib/api';
 import { DOMAINS } from '../data/domains';
 import DomainCard from '../components/DomainCard';
 import ScoreGauge from '../components/ScoreGauge';
 import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '../utils/scoring';
 
-export default function Dashboard() {
+export default function Dashboard({ route }) {
   const router = useRouter();
-  const { responses, startAssessment } = useAssessment();
+  const params = useLocalSearchParams(); // read query params
+  const orgId = params?.orgId ? Number(params.orgId) : null;
 
-  const overallScore = calculateOverallScore(responses);
+  const [assessment, setAssessment] = React.useState(null);
+  const [responses, setResponses] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      if (!orgId) {
+        setLoading(false);
+        return;
+      }
+      const { data: assessments } = await getAssessment(orgId, "in-progress");
+      console.log("The assessments are: ", assessments[0]);
+      if (assessments && assessments.length > 0) {
+        setAssessment(assessments[0]);
+        const { data: resp } = await getResponses(assessments[0].id);
+        setResponses(resp || []);
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, [orgId]);
+
+  const handleStartAssessment = async () => {
+    if (!orgId) return;
+    const { data, error } = await createAssessment({ org_id: orgId, status: "in-progress" });
+    if (data) {
+      setAssessment(data);
+      setResponses([]);
+      // navigate into first domain with assessmentId so user can start answering
+      router.push(`/assessment/1?assessmentId=${data.id}&orgId=${orgId}`);
+    }
+  };
+  
+  console.log("The assessment is ", assessment);
+  const hasStartedAssessment = assessment ? assessment.status : null
+  const hasResponses = responses.length > 0;
+  const overallScore = hasResponses ? calculateOverallScore(responses) : 0;
   const readinessLevel = getReadinessLevel(overallScore);
-  const hasResponses = Object.keys(responses).length > 0;
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>AI Readiness Dashboard</Text>
-        
-        {hasResponses ? (
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : hasStartedAssessment ? (
           <View style={styles.scoreSection}>
             <ScoreGauge score={overallScore} size={140} />
             <View style={styles.scoreInfo}>
@@ -29,7 +66,7 @@ export default function Dashboard() {
                 {readinessLevel.level}
               </Text>
               <Text style={styles.scoreDescription}>
-                Based on {Object.keys(responses).length} answered questions
+                Based on {responses.length} answered questions
               </Text>
             </View>
           </View>
@@ -41,10 +78,7 @@ export default function Dashboard() {
             </Text>
             <TouchableOpacity 
               style={styles.startButton}
-              onPress={() => {
-                startAssessment();
-                router.push('/assessment/1');
-              }}
+              onPress={handleStartAssessment}
             >
               <Text style={styles.startButtonText}>Start Assessment</Text>
             </TouchableOpacity>
@@ -52,7 +86,7 @@ export default function Dashboard() {
         )}
       </View>
 
-      {hasResponses && (
+      {hasStartedAssessment && (
         <View style={styles.domainsSection}>
           <Text style={styles.sectionTitle}>Domain Scores</Text>
           {DOMAINS.map(domain => (
@@ -60,20 +94,14 @@ export default function Dashboard() {
               key={domain.id}
               domain={domain}
               score={calculateDomainScore(responses, domain.id)}
-              onPress={() => router.push(`/assessment/${domain.id}`)}
+              onPress={() => router.push(`/assessment/${domain.id}?assessmentId=${assessment?.id ?? ''}&orgId=${orgId}`)}
             />
           ))}
         </View>
       )}
 
-      {hasResponses && (
+      {hasStartedAssessment && (
         <View style={styles.actionsSection}>
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => router.push('/results')}
-          >
-            <Text style={styles.actionButtonText}>View Detailed Results</Text>
-          </TouchableOpacity>
           
           <TouchableOpacity 
             style={[styles.actionButton, styles.secondaryAction]}
@@ -81,15 +109,6 @@ export default function Dashboard() {
           >
             <Text style={[styles.actionButtonText, styles.secondaryActionText]}>
               Continue Assessment
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.secondaryAction]}
-            onPress={() => router.push('/ai-assistant')}
-          >
-            <Text style={[styles.actionButtonText, styles.secondaryActionText]}>
-              🤖 AI Assistant
             </Text>
           </TouchableOpacity>
         </View>

@@ -45,7 +45,7 @@ export default function OrganizationCard({ org, onEdit, onStartAssessment, onVie
 					</TouchableOpacity>
 
 					<TouchableOpacity style={styles.actionBtnPrimary} onPress={() => onStartAssessment(org)}>
-						<Text style={styles.actionTextPrimary}>Start assessment</Text>
+						<Text style={styles.actionTextPrimary}>View Organization</Text>
 					</TouchableOpacity>
 
 					<TouchableOpacity style={styles.actionBtn} onPress={() => onViewReport(org)}>
