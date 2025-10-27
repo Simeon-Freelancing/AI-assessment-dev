@@ -6,6 +6,7 @@ import { DOMAINS } from '../data/domains';
 import DomainCard from '../components/DomainCard';
 import ScoreGauge from '../components/ScoreGauge';
 import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '../utils/scoring';
+import Theme from '../styles/theme';
 
 export default function Dashboard({ route }) {
   const router = useRouter();
@@ -117,25 +118,27 @@ export default function Dashboard({ route }) {
   );
 }
 
+const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
-  header: { padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 28, fontWeight: '700', color: '#1a365d', marginBottom: 20 },
-  scoreSection: { alignItems: 'center', paddingVertical: 20 },
-  scoreInfo: { alignItems: 'center', marginTop: 20 },
-  readinessLabel: { fontSize: 14, color: '#64748b', marginBottom: 4 },
-  readinessLevel: { fontSize: 24, fontWeight: '700', marginBottom: 8 },
-  scoreDescription: { fontSize: 12, color: '#94a3b8' },
-  emptyState: { alignItems: 'center', paddingVertical: 40 },
-  emptyTitle: { fontSize: 20, fontWeight: '600', color: '#1e293b', marginBottom: 8 },
-  emptyText: { fontSize: 14, color: '#64748b', textAlign: 'center', marginBottom: 24 },
-  startButton: { backgroundColor: '#0891b2', paddingVertical: 14, paddingHorizontal: 32, borderRadius: 8 },
-  startButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  domainsSection: { padding: 16 },
-  sectionTitle: { fontSize: 20, fontWeight: '700', color: '#1e293b', marginBottom: 16 },
-  actionsSection: { padding: 16, paddingBottom: 32 },
-  actionButton: { backgroundColor: '#0891b2', paddingVertical: 16, borderRadius: 8, marginBottom: 12 },
-  actionButtonText: { color: '#fff', fontSize: 16, fontWeight: '600', textAlign: 'center' },
-  secondaryAction: { backgroundColor: '#fff', borderWidth: 2, borderColor: '#0891b2' },
-  secondaryActionText: { color: '#0891b2' },
+  container: { flex: 1, backgroundColor: COLORS.card },
+  header: { padding: SIZES.large, backgroundColor: COLORS.surface, ...SHADOW.soft },
+  title: { fontSize: 28, fontWeight: '800', color: COLORS.primaryDark, marginBottom: SIZES.large },
+  scoreSection: { alignItems: 'center', paddingVertical: SIZES.medium },
+  scoreInfo: { alignItems: 'center', marginTop: SIZES.medium },
+  readinessLabel: { fontSize: TYPOGRAPHY.label, color: COLORS.muted, marginBottom: 6 },
+  readinessLevel: { fontSize: 24, fontWeight: '800', marginBottom: 8 },
+  scoreDescription: { fontSize: TYPOGRAPHY.body, color: COLORS.muted },
+  emptyState: { alignItems: 'center', paddingVertical: SIZES.large },
+  emptyTitle: { fontSize: 20, fontWeight: '700', color: COLORS.text, marginBottom: 8 },
+  emptyText: { fontSize: TYPOGRAPHY.body, color: COLORS.muted, textAlign: 'center', marginBottom: 24 },
+  startButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, paddingHorizontal: SIZES.xl, borderRadius: SIZES.small, ...SHADOW.lifted },
+  startButtonText: { color: COLORS.surface, fontSize: TYPOGRAPHY.h6, fontWeight: '700' },
+  domainsSection: { padding: SIZES.medium },
+  sectionTitle: { fontSize: 20, fontWeight: '700', color: COLORS.text, marginBottom: SIZES.medium },
+  actionsSection: { padding: SIZES.medium, paddingBottom: SIZES.xl },
+  actionButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, borderRadius: SIZES.small, marginBottom: 12, ...SHADOW.lifted },
+  actionButtonText: { color: COLORS.surface, fontSize: TYPOGRAPHY.h6, fontWeight: '700', textAlign: 'center' },
+  secondaryAction: { backgroundColor: COLORS.surface, borderWidth: 2, borderColor: COLORS.primary },
+  secondaryActionText: { color: COLORS.primary },
 });

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAssessment } from "../contexts/AssessmentContext";
+import Theme from "../styles/theme";
 
 export default function Home() {
   const router = useRouter();
@@ -104,104 +105,104 @@ export default function Home() {
   );
 }
 
+const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.card,
   },
   heroImage: {
     width: "100%",
     height: 200,
   },
   heroContent: {
-    padding: 24,
+    padding: SIZES.large,
     alignItems: "center",
   },
   heroTitle: {
     fontSize: 32,
-    fontWeight: "700",
-    color: "#1a365d",
+    fontWeight: "800",
+    color: COLORS.primaryDark,
     textAlign: "center",
-    marginBottom: 12,
+    marginBottom: SIZES.small,
   },
   heroSubtitle: {
-    fontSize: 16,
-    color: "#64748b",
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.muted,
     textAlign: "center",
-    marginBottom: 24,
+    marginBottom: SIZES.medium,
     lineHeight: 24,
   },
   ctaButton: {
-    backgroundColor: "#0891b2",
-    paddingVertical: 16,
-    paddingHorizontal: 48,
-    borderRadius: 12,
-    marginBottom: 12,
+    backgroundColor: COLORS.primary,
+    paddingVertical: SIZES.medium,
+    paddingHorizontal: SIZES.xl,
+    borderRadius: SIZES.radius,
+    marginBottom: SIZES.small,
     width: "100%",
+    ...SHADOW.lifted,
   },
   ctaText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
+    color: COLORS.surface,
+    fontSize: TYPOGRAPHY.h6,
+    fontWeight: "800",
     textAlign: "center",
   },
   secondaryButton: {
-    backgroundColor: "#fff",
-    paddingVertical: 16,
-    paddingHorizontal: 48,
-    borderRadius: 12,
+    backgroundColor: COLORS.surface,
+    paddingVertical: SIZES.medium,
+    paddingHorizontal: SIZES.xl,
+    borderRadius: SIZES.radius,
     borderWidth: 2,
-    borderColor: "#0891b2",
+    borderColor: COLORS.primary,
     width: "100%",
-    marginBottom: 8,
+    marginBottom: SIZES.small,
+    ...SHADOW.soft,
   },
   secondaryText: {
-    color: "#0891b2",
-    fontSize: 18,
-    fontWeight: "600",
+    color: COLORS.primary,
+    fontSize: TYPOGRAPHY.h6,
+    fontWeight: "700",
     textAlign: "center",
   },
   featuresSection: {
-    padding: 24,
+    padding: SIZES.large,
   },
   sectionTitle: {
     fontSize: 24,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 20,
+    fontWeight: "800",
+    color: COLORS.text,
+    marginBottom: SIZES.medium,
   },
   featureCard: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.surface,
+    padding: SIZES.medium,
+    borderRadius: SIZES.radius,
+    marginBottom: SIZES.medium,
+    ...SHADOW.soft,
   },
   featureIcon: {
     fontSize: 32,
-    marginBottom: 8,
+    marginBottom: SIZES.small,
   },
   featureTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1e293b",
-    marginBottom: 8,
+    fontSize: TYPOGRAPHY.h6,
+    fontWeight: "700",
+    color: COLORS.text,
+    marginBottom: SIZES.small,
   },
   featureText: {
-    fontSize: 14,
-    color: "#64748b",
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.muted,
     lineHeight: 20,
   },
   footer: {
-    padding: 24,
+    padding: SIZES.large,
     alignItems: "center",
   },
   footerText: {
     fontSize: 12,
-    color: "#94a3b8",
+    color: COLORS.muted,
   },
 });

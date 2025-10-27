@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import Theme from '../styles/theme';
 
 export default function DomainCard({ domain, score, onPress }) {
   const getScoreColor = (s) => {
-    if (s >= 4.1) return '#10b981';
-    if (s >= 3.1) return '#0891b2';
-    if (s >= 2.1) return '#f59e0b';
+    if (s >= 4.1) return Theme.COLORS.success;
+    if (s >= 3.1) return Theme.COLORS.primary;
+    if (s >= 2.1) return Theme.COLORS.accent;
     if (s > 0) return '#ef4444';
-    return '#cbd5e1';
+    return Theme.COLORS.border;
   };
 
   return (
@@ -29,28 +30,26 @@ export default function DomainCard({ domain, score, onPress }) {
   );
 }
 
+const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
+
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    backgroundColor: COLORS.surface,
+    borderRadius: SIZES.radius,
+    padding: SIZES.medium,
+    marginBottom: SIZES.small,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...SHADOW.soft,
   },
   iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#f1f5f9',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.card,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: SIZES.medium,
   },
   icon: {
     width: 32,
@@ -60,24 +59,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontSize: TYPOGRAPHY.h6,
+    fontWeight: '700',
+    color: COLORS.text,
     marginBottom: 4,
   },
   description: {
-    fontSize: 12,
-    color: '#64748b',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.muted,
   },
   scoreContainer: {
     alignItems: 'flex-end',
   },
   score: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: '800',
   },
   maxScore: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: COLORS.muted,
   },
 });

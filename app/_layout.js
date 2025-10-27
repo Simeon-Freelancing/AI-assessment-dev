@@ -2,6 +2,7 @@ import { Stack, router } from 'expo-router';
 import { Button } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { AssessmentProvider } from '../contexts/AssessmentContext';
+import Theme from '../styles/theme';
 
 export default function RootLayout() {
   return (
@@ -9,11 +10,13 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#1a365d",
+            backgroundColor: Theme.COLORS.primaryDark,
+            ...Theme.SHADOW.soft, // subtle elevation for header
           },
-          headerTintColor: "#fff",
+          headerTintColor: Theme.COLORS.surface,
           headerTitleStyle: {
-            fontWeight: "600",
+            fontWeight: "700",
+            fontFamily: Theme.TYPOGRAPHY.fontFamily,
           },
         }}
       >

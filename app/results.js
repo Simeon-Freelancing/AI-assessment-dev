@@ -8,6 +8,7 @@ import InsightCard from '../components/InsightCard';
 import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '../utils/scoring';
 import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
+import Theme from '../styles/theme';
 
 export default function Results() {
   const router = useRouter();
@@ -226,28 +227,30 @@ export default function Results() {
   );
 }
 
+const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+  container: { flex: 1, backgroundColor: COLORS.card },
   errorCard: {
     backgroundColor: '#fee2e2',
     borderLeftWidth: 4,
     borderLeftColor: '#dc2626',
-    padding: 12,
-    margin: 12,
-    borderRadius: 6,
+    padding: SIZES.small,
+    margin: SIZES.small,
+    borderRadius: SIZES.small,
   },
   errorText: { color: '#991b1b', fontWeight: '700' },
-  scoreSection: { backgroundColor: '#fff', padding: 24, alignItems: 'center' },
-  title: { fontSize: 24, fontWeight: '700', color: '#1a365d', marginBottom: 20 },
-  readinessLevel: { fontSize: 28, fontWeight: '700', marginTop: 16, marginBottom: 8 },
-  scoreDescription: { fontSize: 14, color: '#64748b', textAlign: 'center' },
-  section: { padding: 16 },
-  sectionTitle: { fontSize: 20, fontWeight: '700', color: '#1e293b', marginBottom: 12 },
-  actionsSection: { padding: 16, paddingBottom: 32 },
-  primaryButton: { backgroundColor: '#0891b2', paddingVertical: 16, borderRadius: 8, marginBottom: 12 },
-  primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600', textAlign: 'center' },
-  secondaryButton: { backgroundColor: '#fff', paddingVertical: 16, borderRadius: 8, borderWidth: 2, borderColor: '#0891b2', marginBottom: 12 },
-  secondaryButtonText: { color: '#0891b2', fontSize: 16, fontWeight: '600', textAlign: 'center' },
-  tertiaryButton: { paddingVertical: 12 },
-  tertiaryButtonText: { color: '#64748b', fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  scoreSection: { backgroundColor: COLORS.surface, padding: SIZES.large, alignItems: 'center', ...SHADOW.soft },
+  title: { fontSize: 24, fontWeight: '800', color: COLORS.primaryDark, marginBottom: SIZES.medium },
+  readinessLevel: { fontSize: 28, fontWeight: '800', marginTop: SIZES.small, marginBottom: SIZES.small },
+  scoreDescription: { fontSize: TYPOGRAPHY.body, color: COLORS.muted, textAlign: 'center' },
+  section: { padding: SIZES.medium },
+  sectionTitle: { fontSize: 20, fontWeight: '700', color: COLORS.text, marginBottom: SIZES.small },
+  actionsSection: { padding: SIZES.medium, paddingBottom: SIZES.xl },
+  primaryButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, borderRadius: SIZES.small, marginBottom: SIZES.small, ...SHADOW.lifted },
+  primaryButtonText: { color: COLORS.surface, fontSize: TYPOGRAPHY.h6, fontWeight: '700', textAlign: 'center' },
+  secondaryButton: { backgroundColor: COLORS.surface, paddingVertical: SIZES.medium, borderRadius: SIZES.small, borderWidth: 2, borderColor: COLORS.primary, marginBottom: SIZES.small },
+  secondaryButtonText: { color: COLORS.primary, fontSize: TYPOGRAPHY.h6, fontWeight: '700', textAlign: 'center' },
+  tertiaryButton: { paddingVertical: SIZES.small },
+  tertiaryButtonText: { color: COLORS.muted, fontSize: TYPOGRAPHY.bodyStrong, fontWeight: '700', textAlign: 'center' },
 });

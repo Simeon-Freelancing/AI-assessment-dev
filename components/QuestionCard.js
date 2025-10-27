@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Theme from '../styles/theme';
 
 export default function QuestionCard({ question, currentScore, onScoreChange }) {
   const [showGuidance, setShowGuidance] = useState(false);
   
-  const scores = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const scores = [1,2,3,4,5,6,7,8,9,10];
 
   return (
     <View style={styles.card}>
@@ -19,7 +20,7 @@ export default function QuestionCard({ question, currentScore, onScoreChange }) 
               currentScore === score && styles.scoreButtonActive
             ]}
             onPress={() => onScoreChange(score)}
-            activeOpacity={0.7}
+            activeOpacity={0.8}
           >
             <Text style={[
               styles.scoreText,
@@ -34,6 +35,7 @@ export default function QuestionCard({ question, currentScore, onScoreChange }) 
       <TouchableOpacity 
         onPress={() => setShowGuidance(!showGuidance)}
         style={styles.guidanceButton}
+        activeOpacity={0.8}
       >
         <Text style={styles.guidanceButtonText}>
           {showGuidance ? '▼ Hide Guidance' : '▶ Show Scoring Guidance'}
@@ -49,73 +51,78 @@ export default function QuestionCard({ question, currentScore, onScoreChange }) 
   );
 }
 
+const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
+
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.surface,
+    borderRadius: SIZES.radius,
+    padding: SIZES.large,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...SHADOW.soft,
   },
   questionText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1e293b",
-    marginBottom: 16,
+    fontSize: TYPOGRAPHY.h6,
+    fontFamily: TYPOGRAPHY.fontFamily,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: SIZES.medium,
     lineHeight: 24,
   },
   scoresContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: SIZES.medium,
     flexWrap: "wrap",
-    gap: 10,
   },
   scoreButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#f1f5f9",
+    width: SIZES.scoreButton,
+    height: SIZES.scoreButton,
+    borderRadius: SIZES.scoreButton / 2,
+    backgroundColor: COLORS.card,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "transparent",
+    borderWidth: 1,
+    borderColor: 'transparent',
+    marginRight: 10,
+    marginBottom: 10,
+    ...SHADOW.lifted,
   },
   scoreButtonActive: {
-    backgroundColor: "#0891b2",
-    borderColor: "#0e7490",
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primaryDark,
+    transform: [{ scale: 1.03 }],
   },
   scoreText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#64748b",
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.muted,
+    fontFamily: TYPOGRAPHY.fontFamily,
   },
   scoreTextActive: {
-    color: "#fff",
+    color: '#fff',
   },
   guidanceButton: {
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   guidanceButtonText: {
-    fontSize: 14,
-    color: "#0891b2",
-    fontWeight: "600",
+    fontSize: TYPOGRAPHY.label,
+    color: COLORS.primary,
+    fontWeight: "700",
   },
   guidanceContainer: {
     marginTop: 12,
-    padding: 12,
-    backgroundColor: "#f8fafc",
-    borderRadius: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: "#0891b2",
+    padding: 14,
+    backgroundColor: COLORS.guidanceBg,
+    borderRadius: SIZES.small,
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.primary,
   },
   guidanceText: {
-    fontSize: 13,
-    color: "#475569",
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.subtext,
     lineHeight: 20,
   },
 });

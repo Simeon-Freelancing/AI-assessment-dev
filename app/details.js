@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, TextInput, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import ModalSelector from "react-native-modal-selector";
-import { sampleOrganizations } from "../data/organizations";
 import { getOrganizationNames, getOrganization, createOrganization } from "../lib/api";
+import Theme from '../styles/theme';
 
 export default function Details() {
   const router = useRouter();
@@ -85,14 +85,9 @@ export default function Details() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Choose Organization</Text>
-
-      <TouchableOpacity
-        style={styles.optionButton}
-        onPress={handleShowOrgList}
-      >
+      <TouchableOpacity style={styles.optionButton} onPress={handleShowOrgList}>
         <Text style={styles.optionText}>Select Existing Organization</Text>
       </TouchableOpacity>
-
       <TouchableOpacity
         style={styles.optionButton}
         onPress={() => setShowNewOrgForm(true)}
@@ -114,7 +109,9 @@ export default function Details() {
           ) : (
             <ScrollView style={styles.orgList}>
               {orgList
-                .filter(org => org.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+                .filter((org) =>
+                  org.name?.toLowerCase().includes(searchQuery.toLowerCase())
+                )
                 .map((org) => (
                   <TouchableOpacity
                     key={org.id}
@@ -138,14 +135,24 @@ export default function Details() {
       {/* Organization Details Modal */}
       <Modal visible={!!selectedOrg} animationType="slide">
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Organization Details</Text>
-          <Text style={styles.detailText}>Name: {selectedOrgDetails?.name}</Text>
-          <Text style={styles.detailText}>Industry: {selectedOrgDetails?.industry}</Text>
-          <Text style={styles.detailText}>Email: {selectedOrgDetails?.email}</Text>
-          <Text style={styles.detailText}>Employee Size: {selectedOrgDetails?.employeeSize}</Text>
-          <Text style={styles.detailText}>Goals: {selectedOrgDetails?.goals}</Text>
-          <Text style={styles.detailText}>Description: {selectedOrgDetails?.description}</Text>
-          <Text style={styles.detailText}>Onboard Date: {selectedOrgDetails?.onboardDate}</Text>
+          <Text style={styles.modalTitle}>
+            {selectedOrgDetails?.name}
+          </Text>
+          <Text style={styles.detailText}>
+            Industry: {selectedOrgDetails?.industry}
+          </Text>
+          <Text style={styles.detailText}>
+            Email: {selectedOrgDetails?.email}
+          </Text>
+          <Text style={styles.detailText}>
+            Employee Size: {selectedOrgDetails?.employeeSize}
+          </Text>
+          <Text style={styles.detailText}>
+            Goals: {selectedOrgDetails?.goals}
+          </Text>
+          <Text style={styles.detailText}>
+            Description: {selectedOrgDetails?.description}
+          </Text>
           <TouchableOpacity
             style={styles.continueButton}
             onPress={handleContinueToDashboard}
@@ -188,11 +195,18 @@ export default function Details() {
               key: index,
               label: item,
             }))}
-            initValue="Select Industry"
+            initValue={formData.industry || "Select Industry"}
             onChange={(option) =>
               setFormData({ ...formData, industry: option.label })
             }
-          />
+          >
+            <View style={styles.selector}>
+              <Text style={styles.selectorText}>
+                {formData.industry || "Select Industry"}
+              </Text>
+              <Text style={styles.selectorArrow}>▾</Text>
+            </View>
+          </ModalSelector>
 
           <TextInput
             style={[styles.input, styles.textArea]}
@@ -209,22 +223,33 @@ export default function Details() {
               key: index,
               label: item,
             }))}
-            initValue="Select Employee Size"
+            initValue={formData.employeeSize || "Select Employee Size"}
             onChange={(option) =>
               setFormData({ ...formData, employeeSize: option.label })
             }
-          />
+          >
+            <View style={styles.selector}>
+              <Text style={styles.selectorText}>
+                {formData.employeeSize || "Select Employee Size"}
+              </Text>
+              <Text style={styles.selectorArrow}>▾</Text>
+            </View>
+          </ModalSelector>
 
           <ModalSelector
-            data={goals.map((item, index) => ({
-              key: index,
-              label: item,
-            }))}
-            initValue="Select Primary Goal"
+            data={goals.map((item, index) => ({ key: index, label: item }))}
+            initValue={formData.goals || "Select Primary Goal"}
             onChange={(option) =>
               setFormData({ ...formData, goals: option.label })
             }
-          />
+          >
+            <View style={styles.selector}>
+              <Text style={styles.selectorText}>
+                {formData.goals || "Select Primary Goal"}
+              </Text>
+              <Text style={styles.selectorArrow}>▾</Text>
+            </View>
+          </ModalSelector>
 
           <TouchableOpacity
             style={styles.submitButton}
@@ -245,102 +270,122 @@ export default function Details() {
   );
 }
 
+const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f8fafc',
+    padding: SIZES.large,
+    backgroundColor: COLORS.card,
   },
   title: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#1a365d',
-    marginBottom: 30,
-    textAlign: 'center',
+    fontWeight: "800",
+    color: COLORS.primaryDark,
+    marginBottom: SIZES.large,
+    textAlign: "center",
   },
   optionButton: {
-    backgroundColor: '#0891b2',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 15,
+    backgroundColor: COLORS.primary,
+    padding: SIZES.medium,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.small,
+    ...SHADOW.lifted,
   },
   optionText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
+    color: COLORS.surface,
+    fontSize: TYPOGRAPHY.h6,
+    fontWeight: "700",
+    textAlign: "center",
   },
   modalContainer: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    padding: SIZES.large,
+    backgroundColor: COLORS.surface,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 20,
+    fontWeight: "800",
+    marginBottom: SIZES.medium,
   },
   searchInput: {
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 15,
+    borderColor: COLORS.border,
+    padding: SIZES.small,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.small,
   },
   orgList: {
     flex: 1,
   },
   orgItem: {
-    padding: 15,
+    padding: SIZES.medium,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: COLORS.border,
   },
   orgName: {
-    fontSize: 16,
-    color: '#1e293b',
+    fontSize: TYPOGRAPHY.h6,
+    color: COLORS.text,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
+    borderColor: COLORS.border,
+    padding: SIZES.small,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.small,
   },
   textArea: {
     height: 100,
-    textAlignVertical: 'top',
-  },
-  picker: {
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
+    textAlignVertical: "top",
   },
   submitButton: {
-    backgroundColor: '#0891b2',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
+    backgroundColor: COLORS.primary,
+    padding: SIZES.small,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.small,
+    ...SHADOW.lifted,
   },
   continueButton: {
-    backgroundColor: '#0891b2',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
+    backgroundColor: COLORS.primary,
+    padding: SIZES.small,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.small,
   },
   closeButton: {
-    backgroundColor: '#64748b',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: COLORS.muted,
+    padding: SIZES.small,
+    borderRadius: SIZES.small,
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '600',
+    color: COLORS.surface,
+    textAlign: "center",
+    fontSize: TYPOGRAPHY.bodyStrong,
+    fontWeight: "700",
   },
   detailText: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: TYPOGRAPHY.body,
+    marginBottom: SIZES.small,
+  },
+  selector: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingVertical: SIZES.small,
+    paddingHorizontal: SIZES.small,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.small,
+    backgroundColor: COLORS.surface,
+  },
+  selectorText: {
+    color: COLORS.text,
+    fontSize: TYPOGRAPHY.body,
+  },
+  selectorArrow: {
+    color: COLORS.muted,
+    fontSize: 18,
+    marginLeft: 10,
   },
 });
 

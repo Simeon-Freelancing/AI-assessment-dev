@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 
 import { useAssessment } from '../contexts/AssessmentContext';
 import { calculateOverallScore, calculateDomainScore } from '../utils/scoring';
 import { DOMAINS } from '../data/domains';
+import Theme from '../styles/theme';
 
 export default function AIAssistant() {
   const { responses } = useAssessment();
@@ -85,7 +86,6 @@ export default function AIAssistant() {
           </View>
         ))}
       </ScrollView>
-
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -102,65 +102,69 @@ export default function AIAssistant() {
   );
 }
 
+const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: COLORS.card,
   },
   chatContainer: {
     flex: 1,
-    padding: 16,
+    padding: SIZES.medium,
   },
   messageBubble: {
-    marginBottom: 16,
-    padding: 12,
-    borderRadius: 12,
+    marginBottom: SIZES.medium,
+    padding: SIZES.small,
+    borderRadius: SIZES.radius,
     maxWidth: '85%',
+    ...SHADOW.soft,
   },
   userBubble: {
     alignSelf: 'flex-end',
-    backgroundColor: '#0891b2',
+    backgroundColor: COLORS.primary,
   },
   assistantBubble: {
     alignSelf: 'flex-start',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: COLORS.border,
   },
   roleLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginBottom: 4,
-    color: '#64748b',
+    fontSize: TYPOGRAPHY.label,
+    fontWeight: '700',
+    marginBottom: 6,
+    color: COLORS.muted,
   },
   messageText: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#1e293b',
+    fontSize: TYPOGRAPHY.body,
+    lineHeight: 22,
+    color: COLORS.text,
   },
   inputContainer: {
     flexDirection: 'row',
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: SIZES.medium,
+    backgroundColor: COLORS.surface,
     borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-  },
+    borderTopColor: COLORS.border,
+    },
   input: {
     flex: 1,
-    backgroundColor: '#f8fafc',
-    borderRadius: 8,
-    padding: 12,
-    marginRight: 8,
+    backgroundColor: COLORS.card,
+    borderRadius: SIZES.small,
+    padding: SIZES.small,
+    marginRight: SIZES.small,
     maxHeight: 100,
   },
   sendButton: {
-    backgroundColor: '#0891b2',
-    borderRadius: 8,
-    paddingHorizontal: 20,
+    backgroundColor: COLORS.primary,
+    borderRadius: SIZES.small,
+    paddingHorizontal: SIZES.large,
     justifyContent: 'center',
+    ...SHADOW.lifted,
   },
   sendButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: COLORS.surface,
+    fontWeight: '700',
   },
 });

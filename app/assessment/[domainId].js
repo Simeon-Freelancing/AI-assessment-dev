@@ -1,4 +1,3 @@
-// ...existing code...
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -14,7 +13,7 @@ import { QUESTIONS } from "../../data/questions";
 import { DOMAINS } from "../../data/domains";
 import { getResponses, createResponse, updateResponse } from "../../lib/api";
 import { useAssessment } from "../../contexts/AssessmentContext";
-// ...existing code...
+import Theme from '../../styles/theme';
 
 export default function DomainAssessment() {
   const params = useLocalSearchParams();
@@ -134,20 +133,17 @@ export default function DomainAssessment() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{domain?.name}</Text>
-
       <ScrollView style={styles.questionsContainer}>
         {questions.map((question) => (
           <QuestionCard
             key={question.id}
             question={question}
-            // keep each question title inside QuestionCard
             currentScore={responses[question.id]}
             currentComment={comments[question.id]}
             onScoreChange={(score) => updateResponse(question.id, score)}
             onCommentChange={(text) => updateComment(question.id, text)}
           />
         ))}
-
         <TouchableOpacity
           style={[styles.saveButton]}
           onPress={handleSaveChanges}
@@ -158,7 +154,6 @@ export default function DomainAssessment() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-
       <View style={styles.footer}>
         <TouchableOpacity
           style={[styles.navButton, styles.prevButton]}
@@ -167,7 +162,6 @@ export default function DomainAssessment() {
         >
           <Text style={styles.navButtonText}>← Previous</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.navButton, styles.nextButton]}
           onPress={handleNextDomain}
@@ -181,60 +175,64 @@ export default function DomainAssessment() {
   );
 }
 
-// ...existing code...
+const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f8fafc",
+    padding: SIZES.large,
+    backgroundColor: COLORS.card,
   },
   title: {
     fontSize: 22,
-    fontWeight: "700",
-    color: "#1a365d",
-    marginBottom: 12,
+    fontWeight: "800",
+    color: COLORS.primaryDark,
+    marginBottom: SIZES.medium,
   },
   questionsContainer: {
     flex: 1,
+    marginBottom: SIZES.medium,
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 12,
-    paddingVertical: 12,
+    marginTop: SIZES.medium,
+    paddingVertical: SIZES.small,
   },
   navButton: {
     flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: SIZES.small,
+    borderRadius: SIZES.small,
     marginHorizontal: 6,
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: "#cbd5e1",
+    borderColor: COLORS.border,
+    ...SHADOW.soft,
   },
   prevButton: {},
   nextButton: {
-    backgroundColor: "#0891b2",
+    backgroundColor: COLORS.primary,
   },
   navButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#1f2937",
+    fontSize: TYPOGRAPHY.bodyStrong,
+    fontWeight: "700",
+    color: COLORS.text,
   },
   nextButtonText: {
-    color: "#fff",
+    color: COLORS.surface,
   },
   saveButton: {
     flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: SIZES.small,
+    borderRadius: SIZES.small,
     marginHorizontal: 6,
     alignItems: "center",
-    backgroundColor: "#f59e0b",
+    backgroundColor: COLORS.accent,
+    ...SHADOW.lifted,
   },
   saveButtonText: {
-    color: "#fff",
-    fontWeight: "700",
+    color: COLORS.surface,
+    fontWeight: "800",
   },
 });
