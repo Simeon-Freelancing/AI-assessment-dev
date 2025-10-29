@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Theme from '../styles/theme';
+import Typography from './ui/Typography';
 
 export default function InsightCard({ title, content, type = 'info' }) {
   const getIcon = () => {
@@ -13,10 +15,10 @@ export default function InsightCard({ title, content, type = 'info' }) {
 
   const getColor = () => {
     switch (type) {
-      case 'strength': return '#10b981';
-      case 'weakness': return '#ef4444';
-      case 'recommendation': return '#0891b2';
-      default: return '#64748b';
+      case 'strength': return Theme.COLORS.success;
+      case 'weakness': return Theme.COLORS.danger;
+      case 'recommendation': return Theme.COLORS.primaryAccent;
+      default: return Theme.COLORS.muted;
     }
   };
 
@@ -24,7 +26,7 @@ export default function InsightCard({ title, content, type = 'info' }) {
     <View style={[styles.card, { borderLeftColor: getColor() }]}>
       <View style={styles.header}>
         <Text style={styles.icon}>{getIcon()}</Text>
-        <Text style={styles.title}>{title}</Text>
+        <Typography.H3 style={styles.title}>{title}</Typography.H3>
       </View>
       <Text style={styles.content}>{content}</Text>
     </View>
@@ -33,16 +35,12 @@ export default function InsightCard({ title, content, type = 'info' }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    backgroundColor: Theme.COLORS.surface,
+    borderRadius: Theme.SIZES.cardRadius,
+    padding: Theme.SIZES.md,
+    marginBottom: Theme.SIZES.md,
     borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...Theme.SHADOW.subtle,
   },
   header: {
     flexDirection: 'row',
@@ -54,14 +52,11 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
     flex: 1,
   },
   content: {
     fontSize: 14,
-    color: '#64748b',
+    color: Theme.COLORS.muted,
     lineHeight: 20,
   },
 });

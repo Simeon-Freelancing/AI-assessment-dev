@@ -1,16 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Theme from '../styles/theme';
+import Typography from './ui/Typography';
 
 const getStatusColor = (status) => {
-  switch (status.toLowerCase()) {
+  switch ((status || '').toLowerCase()) {
     case 'in progress':
-      return '#f59e0b';
+      return Theme.COLORS.accent;
     case 'submitted':
-      return '#10b981';
+      return Theme.COLORS.success;
     case 'not started':
-      return '#ef4444';
+      return Theme.COLORS.danger;
     default:
-      return '#6b7280';
+      return Theme.COLORS.muted;
   }
 };
 
@@ -19,7 +21,7 @@ const AssessmentCard = ({ report, onPress }) => {
     <TouchableOpacity onPress={onPress} >
       <View style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.title}>{report.title}</Text>
+            <Typography.H3 style={styles.title}>{report.title}</Typography.H3>
           <View style={[styles.statusBadge, { backgroundColor: getStatusColor(report.status) }]}>
             <Text style={styles.statusText}>{report.status}</Text>
           </View>
@@ -46,56 +48,59 @@ const AssessmentCard = ({ report, onPress }) => {
 };
 
 const styles = StyleSheet.create({
-  // ...existing styles...
+  // updated to use theme tokens
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 2,
+    backgroundColor: Theme.COLORS.surface,
+    borderRadius: Theme.SIZES.cardRadius,
+    padding: Theme.SIZES.md,
+    marginBottom: Theme.SIZES.sm,
+    borderWidth: 1,
+    borderColor: Theme.COLORS.border,
+    ...Theme.SHADOW.subtle,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: Theme.SIZES.sm,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a365d',
+    fontSize: Theme.TYPOGRAPHY.h3,
+    fontWeight: Theme.TYPOGRAPHY.weight.bold,
+    color: Theme.COLORS.navy,
     flex: 1,
-    marginRight: 12,
+    marginRight: Theme.SIZES.sm,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: Theme.SIZES.sm,
+    paddingVertical: Theme.SIZES.xs,
+    borderRadius: Theme.SIZES.radius,
   },
   statusText: {
     color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: Theme.TYPOGRAPHY.small,
+    fontWeight: Theme.TYPOGRAPHY.weight.medium,
   },
   content: {
-    gap: 8,
+    gap: Theme.SIZES.xs,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   label: {
-    color: '#64748b',
-    fontSize: 14,
-    marginRight: 8,
+    color: Theme.COLORS.muted,
+    fontSize: Theme.TYPOGRAPHY.small,
+    marginRight: Theme.SIZES.sm,
   },
   value: {
-    color: '#0f172a',
-    fontSize: 14,
+    color: Theme.COLORS.text,
+    fontSize: Theme.TYPOGRAPHY.body,
   },
   details: {
-    color: '#64748b',
-    fontSize: 14,
-    marginTop: 8,
+    color: Theme.COLORS.muted,
+    fontSize: Theme.TYPOGRAPHY.small,
+    marginTop: Theme.SIZES.sm,
   }
 });
 

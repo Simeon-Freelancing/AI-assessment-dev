@@ -7,6 +7,8 @@ import DomainCard from '../components/DomainCard';
 import ScoreGauge from '../components/ScoreGauge';
 import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '../utils/scoring';
 import Theme from '../styles/theme';
+import Typography from '../components/ui/Typography';
+import Button from '../components/ui/Button';
 
 export default function Dashboard({ route }) {
   const router = useRouter();
@@ -42,7 +44,7 @@ export default function Dashboard({ route }) {
       setAssessment(data);
       setResponses([]);
       // navigate into first domain with assessmentId so user can start answering
-      router.push(`/assessment/1?assessmentId=${data.id}&orgId=${orgId}`);
+      router.push(`/assessment/1?orgId=${orgId}&assessmentId=${data.id}`);
     }
   };
   
@@ -55,7 +57,7 @@ export default function Dashboard({ route }) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>AI Readiness Dashboard</Text>
+        <Typography.H1 style={styles.title}>AI Readiness Dashboard</Typography.H1>
         {loading ? (
           <Text>Loading...</Text>
         ) : hasStartedAssessment ? (
@@ -63,12 +65,14 @@ export default function Dashboard({ route }) {
             <ScoreGauge score={overallScore} size={140} />
             <View style={styles.scoreInfo}>
               <Text style={styles.readinessLabel}>Readiness Level</Text>
-              <Text style={[styles.readinessLevel, { color: readinessLevel.color }]}>
-                {readinessLevel.level}
-              </Text>
-              <Text style={styles.scoreDescription}>
-                Based on {responses.length} answered questions
-              </Text>
+                <Text
+                  style={[styles.readinessLevel, { color: readinessLevel.color }]}
+                >
+                  {readinessLevel.level}
+                </Text>
+                <Text style={styles.scoreDescription}>
+                  Based on {responses.length} answered questions
+                </Text>
             </View>
           </View>
         ) : (
@@ -77,25 +81,26 @@ export default function Dashboard({ route }) {
             <Text style={styles.emptyText}>
               Start your AI readiness assessment to see your dashboard
             </Text>
-            <TouchableOpacity 
-              style={styles.startButton}
-              onPress={handleStartAssessment}
-            >
-              <Text style={styles.startButtonText}>Start Assessment</Text>
-            </TouchableOpacity>
+            <Button style={styles.startButton} onPress={handleStartAssessment}>Start Assessment</Button>
           </View>
         )}
       </View>
 
       {hasStartedAssessment && (
         <View style={styles.domainsSection}>
-          <Text style={styles.sectionTitle}>Domain Scores</Text>
-          {DOMAINS.map(domain => (
+          <Typography.H2 style={styles.sectionTitle}>Domain Scores</Typography.H2>
+          {DOMAINS.map((domain) => (
             <DomainCard
               key={domain.id}
               domain={domain}
               score={calculateDomainScore(responses, domain.id)}
-              onPress={() => router.push(`/assessment/${domain.id}?assessmentId=${assessment?.id ?? ''}&orgId=${orgId}`)}
+              onPress={() =>
+                router.push(
+                  `/assessment/${domain.id}?orgId=${orgId}&assessmentId=${
+                    assessment?.id ?? ""
+                  }`
+                )
+              }
             />
           ))}
         </View>
@@ -103,15 +108,9 @@ export default function Dashboard({ route }) {
 
       {hasStartedAssessment && (
         <View style={styles.actionsSection}>
-          
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.secondaryAction]}
-            onPress={() => router.push('/assessment/1')}
-          >
-            <Text style={[styles.actionButtonText, styles.secondaryActionText]}>
-              Continue Assessment
-            </Text>
-          </TouchableOpacity>
+          <Button style={[styles.actionButton, styles.secondaryAction]} onPress={() => router.push(`/assessment/1?orgId=${orgId}&assessmentId=${assessment?.id ?? ''}`)}>
+            Continue Assessment
+          </Button>
         </View>
       )}
     </ScrollView>
@@ -122,7 +121,7 @@ const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.card },
-  header: { padding: SIZES.large, backgroundColor: COLORS.surface, ...SHADOW.soft },
+  header: { padding: SIZES.large, backgroundColor: COLORS.surface, ...SHADOW.subtle },
   title: { fontSize: 28, fontWeight: '800', color: COLORS.primaryDark, marginBottom: SIZES.large },
   scoreSection: { alignItems: 'center', paddingVertical: SIZES.medium },
   scoreInfo: { alignItems: 'center', marginTop: SIZES.medium },
@@ -132,12 +131,12 @@ const styles = StyleSheet.create({
   emptyState: { alignItems: 'center', paddingVertical: SIZES.large },
   emptyTitle: { fontSize: 20, fontWeight: '700', color: COLORS.text, marginBottom: 8 },
   emptyText: { fontSize: TYPOGRAPHY.body, color: COLORS.muted, textAlign: 'center', marginBottom: 24 },
-  startButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, paddingHorizontal: SIZES.xl, borderRadius: SIZES.small, ...SHADOW.lifted },
+  startButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, paddingHorizontal: SIZES.xl, borderRadius: SIZES.small, ...SHADOW.elevated },
   startButtonText: { color: COLORS.surface, fontSize: TYPOGRAPHY.h6, fontWeight: '700' },
   domainsSection: { padding: SIZES.medium },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: COLORS.text, marginBottom: SIZES.medium },
   actionsSection: { padding: SIZES.medium, paddingBottom: SIZES.xl },
-  actionButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, borderRadius: SIZES.small, marginBottom: 12, ...SHADOW.lifted },
+  actionButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, borderRadius: SIZES.small, marginBottom: 12, ...SHADOW.elevated },
   actionButtonText: { color: COLORS.surface, fontSize: TYPOGRAPHY.h6, fontWeight: '700', textAlign: 'center' },
   secondaryAction: { backgroundColor: COLORS.surface, borderWidth: 2, borderColor: COLORS.primary },
   secondaryActionText: { color: COLORS.primary },

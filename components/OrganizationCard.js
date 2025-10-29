@@ -1,14 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import Theme from '../styles/theme';
+import Typography from './ui/Typography';
+import Button from './ui/Button';
 
 export default function OrganizationCard({ org, onEdit, onStartAssessment, onViewReport }) {
 	const assessments = org.assessments || [];
 	const latest = assessments.length > 0 ? assessments[0] : null;
 
 	return (
-		<View style={styles.card}>
-			<View style={styles.leftAccent} />
-			<View style={styles.content}>
+			<View style={styles.card}>
+				<View style={styles.leftAccent} />
+				<View style={styles.content}>
 				<View style={styles.rowTop}>
 					<Text style={styles.name}>{org.name}</Text>
 					<Text style={styles.meta}>ID: {org.id}</Text>
@@ -39,19 +42,11 @@ export default function OrganizationCard({ org, onEdit, onStartAssessment, onVie
 					</View>
 				)}
 
-				<View style={styles.actions}>
-					<TouchableOpacity style={styles.actionBtn} onPress={() => onEdit(org)}>
-						<Text style={styles.actionText}>Edit</Text>
-					</TouchableOpacity>
-
-					<TouchableOpacity style={styles.actionBtnPrimary} onPress={() => onStartAssessment(org)}>
-						<Text style={styles.actionTextPrimary}>View Organization</Text>
-					</TouchableOpacity>
-
-					<TouchableOpacity style={styles.actionBtn} onPress={() => onViewReport(org)}>
-						<Text style={styles.actionText}>Reports</Text>
-					</TouchableOpacity>
-				</View>
+							<View style={styles.actions}>
+								<Button variant="ghost" style={styles.actionBtn} onPress={() => onEdit(org)}>Edit</Button>
+								<Button style={[styles.actionBtnPrimary]} onPress={() => onStartAssessment(org)}>View Organization</Button>
+								<Button variant="ghost" style={styles.actionBtn} onPress={() => onViewReport(org)}>Reports</Button>
+							</View>
 			</View>
 		</View>
 	);
@@ -60,25 +55,22 @@ export default function OrganizationCard({ org, onEdit, onStartAssessment, onVie
 const styles = StyleSheet.create({
 	card: {
 		flexDirection: 'row',
-		backgroundColor: '#fff',
-		borderRadius: 8,
-		padding: 12,
-		marginVertical: 8,
-		shadowColor: '#000',
-		shadowOpacity: 0.06,
-		shadowRadius: 8,
-		elevation: 3,
+		backgroundColor: Theme.COLORS.surface,
+		borderRadius: Theme.SIZES.cardRadius,
+		padding: Theme.SIZES.md,
+		marginVertical: Theme.SIZES.md,
+		...Theme.SHADOW.subtle,
 		overflow: 'hidden',
 	},
 	leftAccent: {
 		width: 6,
-		backgroundColor: '#1a365d',
-		borderTopLeftRadius: 8,
-		borderBottomLeftRadius: 8,
+		backgroundColor: Theme.COLORS.primary,
+		borderTopLeftRadius: Theme.SIZES.cardRadius,
+		borderBottomLeftRadius: Theme.SIZES.cardRadius,
 	},
 	content: {
 		flex: 1,
-		paddingHorizontal: 12,
+		paddingHorizontal: Theme.SIZES.md,
 	},
 	rowTop: {
 		flexDirection: 'row',
@@ -86,91 +78,76 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	name: {
-		fontSize: 16,
-		fontWeight: '800',
-		color: '#0f172a',
+		fontSize: Theme.TYPOGRAPHY.h3,
+		fontWeight: Theme.TYPOGRAPHY.weight.bold,
+		color: Theme.COLORS.navy,
 	},
 	meta: {
-		fontSize: 12,
-		color: '#64748b',
+		fontSize: Theme.TYPOGRAPHY.small,
+		color: Theme.COLORS.muted,
 	},
 	rowMeta: {
 		flexDirection: 'row',
 		justifyContent: 'flex-start',
 		gap: 12,
-		marginTop: 6,
+		marginTop: Theme.SIZES.sm,
 	},
 	small: {
-		color: '#6b7280',
-		fontSize: 12,
-		marginRight: 10,
+		color: Theme.COLORS.muted,
+		fontSize: Theme.TYPOGRAPHY.small,
+		marginRight: Theme.SIZES.sm,
 	},
 	sectionTitle: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#111827',
+		fontSize: Theme.TYPOGRAPHY.small,
+		fontWeight: Theme.TYPOGRAPHY.weight.bold,
+		color: Theme.COLORS.navy,
 	},
 	latest: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		marginTop: 8,
+		marginTop: Theme.SIZES.sm,
 	},
 	latestText: {
-		color: '#374151',
-		marginTop: 4,
+		color: Theme.COLORS.subtext,
+		marginTop: Theme.SIZES.xs,
 	},
 	snippet: {
-		color: '#6b7280',
-		marginTop: 6,
-		fontSize: 12,
+		color: Theme.COLORS.muted,
+		marginTop: Theme.SIZES.sm,
+		fontSize: Theme.TYPOGRAPHY.small,
 	},
 	scoreWrap: {
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: 10,
+		paddingHorizontal: Theme.SIZES.md,
 	},
 	scoreLabel: {
-		fontSize: 12,
-		color: '#6b7280',
+		fontSize: Theme.TYPOGRAPHY.small,
+		color: Theme.COLORS.muted,
 	},
 	scoreValue: {
-		marginTop: 4,
+		marginTop: Theme.SIZES.xs,
 		fontSize: 18,
-		fontWeight: '800',
-		color: '#1a365d',
+		fontWeight: Theme.TYPOGRAPHY.weight.bold,
+		color: Theme.COLORS.primary,
 	},
 	noAssess: {
-		marginTop: 8,
+		marginTop: Theme.SIZES.sm,
 	},
 	noAssessText: {
-		color: '#9ca3af',
+		color: Theme.COLORS.muted,
 		fontStyle: 'italic',
 	},
 	actions: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		marginTop: 12,
+		marginTop: Theme.SIZES.md,
 	},
 	actionBtn: {
-		paddingVertical: 8,
-		paddingHorizontal: 10,
-		borderRadius: 6,
-		backgroundColor: '#eef2ff',
-		marginRight: 8,
-	},
-	actionText: {
-		color: '#1a365d',
-		fontWeight: '600',
+		marginRight: Theme.SIZES.sm,
 	},
 	actionBtnPrimary: {
-		paddingVertical: 8,
-		paddingHorizontal: 12,
-		borderRadius: 6,
-		backgroundColor: '#1a365d',
-	},
-	actionTextPrimary: {
-		color: '#fff',
-		fontWeight: '700',
+		backgroundColor: Theme.COLORS.primary,
 	},
 });

@@ -9,6 +9,8 @@ import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '
 import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import Theme from '../styles/theme';
+import Button from '../components/ui/Button';
+import Typography from '../components/ui/Typography';
 
 export default function Results() {
   const router = useRouter();
@@ -149,14 +151,10 @@ export default function Results() {
       )}
 
       <View style={styles.scoreSection}>
-        <Text style={styles.title}>Your AI Readiness Score</Text>
+        <Typography.H2 style={styles.title}>Your AI Readiness Score</Typography.H2>
         <ScoreGauge score={overallScore} size={160} />
-        <Text style={[styles.readinessLevel, { color: readinessLevel.color }]}>
-          {readinessLevel.level}
-        </Text>
-        <Text style={styles.scoreDescription}>
-          Based on {Object.keys(responses).length} questions across {DOMAINS.length} domains
-        </Text>
+        <Text style={[styles.readinessLevel, { color: readinessLevel.color }]}> {readinessLevel.level} </Text>
+        <Text style={styles.scoreDescription}>Based on {Object.keys(responses).length} questions across {DOMAINS.length} domains</Text>
       </View>
 
       {strengths.length > 0 && (
@@ -200,28 +198,22 @@ export default function Results() {
       </View>
 
       <View style={styles.actionsSection}>
-        <TouchableOpacity style={styles.primaryButton} onPress={handleGenerateReport} disabled={generating}>
+        <Button style={styles.primaryButton} onPress={handleGenerateReport} disabled={generating}>
           {generating ? (
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <ActivityIndicator color="#fff" style={{ marginRight: 8 }} />
               <Text style={styles.primaryButtonText}>Generating report...</Text>
             </View>
           ) : (
-            <Text style={styles.primaryButtonText}>📄 Generate Full Report</Text>
+            <>📄 Generate Full Report</>
           )}
-        </TouchableOpacity>
+        </Button>
 
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/dashboard')}>
-          <Text style={styles.secondaryButtonText}>View Dashboard</Text>
-        </TouchableOpacity>
+        <Button variant="ghost" style={styles.secondaryButton} onPress={() => router.push('/dashboard')}>View Dashboard</Button>
 
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/ai-assistant')}>
-          <Text style={styles.secondaryButtonText}>🤖 Ask AI Assistant</Text>
-        </TouchableOpacity>
+        <Button variant="ghost" style={styles.secondaryButton} onPress={() => router.push('/ai-assistant')}>🤖 Ask AI Assistant</Button>
 
-        <TouchableOpacity style={styles.tertiaryButton} onPress={handleRestart}>
-          <Text style={styles.tertiaryButtonText}>Start New Assessment</Text>
-        </TouchableOpacity>
+        <Button variant="ghost" style={styles.tertiaryButton} onPress={handleRestart}>Start New Assessment</Button>
       </View>
     </ScrollView>
   );
@@ -240,14 +232,14 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.small,
   },
   errorText: { color: '#991b1b', fontWeight: '700' },
-  scoreSection: { backgroundColor: COLORS.surface, padding: SIZES.large, alignItems: 'center', ...SHADOW.soft },
+  scoreSection: { backgroundColor: COLORS.surface, padding: SIZES.large, alignItems: 'center', ...SHADOW.subtle },
   title: { fontSize: 24, fontWeight: '800', color: COLORS.primaryDark, marginBottom: SIZES.medium },
   readinessLevel: { fontSize: 28, fontWeight: '800', marginTop: SIZES.small, marginBottom: SIZES.small },
   scoreDescription: { fontSize: TYPOGRAPHY.body, color: COLORS.muted, textAlign: 'center' },
   section: { padding: SIZES.medium },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: COLORS.text, marginBottom: SIZES.small },
   actionsSection: { padding: SIZES.medium, paddingBottom: SIZES.xl },
-  primaryButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, borderRadius: SIZES.small, marginBottom: SIZES.small, ...SHADOW.lifted },
+  primaryButton: { backgroundColor: COLORS.primary, paddingVertical: SIZES.medium, borderRadius: SIZES.small, marginBottom: SIZES.small, ...SHADOW.elevated },
   primaryButtonText: { color: COLORS.surface, fontSize: TYPOGRAPHY.h6, fontWeight: '700', textAlign: 'center' },
   secondaryButton: { backgroundColor: COLORS.surface, paddingVertical: SIZES.medium, borderRadius: SIZES.small, borderWidth: 2, borderColor: COLORS.primary, marginBottom: SIZES.small },
   secondaryButtonText: { color: COLORS.primary, fontSize: TYPOGRAPHY.h6, fontWeight: '700', textAlign: 'center' },

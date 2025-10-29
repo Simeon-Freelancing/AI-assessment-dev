@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Theme from '../styles/theme';
 
 export default function ScoreGauge({ score, size = 120 }) {
   const percentage = (score / 5) * 100;
@@ -8,10 +9,10 @@ export default function ScoreGauge({ score, size = 120 }) {
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
   
   const getColor = () => {
-    if (score >= 4.1) return '#10b981';
-    if (score >= 3.1) return '#0891b2';
+    if (score >= 4.1) return Theme.COLORS.success;
+    if (score >= 3.1) return Theme.COLORS.primaryAccent;
     if (score >= 2.1) return '#f59e0b';
-    return '#ef4444';
+    return Theme.COLORS.danger;
   };
 
   return (
@@ -24,6 +25,8 @@ export default function ScoreGauge({ score, size = 120 }) {
     </View>
   );
 }
+
+const { COLORS, TYPOGRAPHY } = Theme;
 
 const styles = StyleSheet.create({
   container: {
@@ -42,13 +45,13 @@ const styles = StyleSheet.create({
     borderRadius: 1000,
   },
   scoreText: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '700',
-    color: '#1e293b',
+    color: COLORS.navy,
   },
   maxText: {
-    fontSize: 14,
-    color: '#64748b',
+    fontSize: TYPOGRAPHY.small,
+    color: COLORS.muted,
     marginTop: -4,
   },
 });

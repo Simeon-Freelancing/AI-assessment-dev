@@ -3,13 +3,14 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,
   ScrollView,
   StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAssessment } from "../contexts/AssessmentContext";
 import Theme from "../styles/theme";
+import Typography from '../components/ui/Typography';
+import Button from '../components/ui/Button';
 
 export default function Home() {
   const router = useRouter();
@@ -30,34 +31,12 @@ export default function Home() {
       />
 
       <View style={styles.heroContent}>
-        <Text style={styles.heroTitle}>Measure Your AI Future</Text>
-        <Text style={styles.heroSubtitle}>
+        <Typography.H1 style={styles.heroTitle}>Measure Your AI Future</Typography.H1>
+        <Typography.P style={styles.heroSubtitle}>
           Comprehensive AI readiness evaluation across 10 critical domains
-        </Text>
+        </Typography.P>
 
-        <TouchableOpacity
-          style={styles.ctaButton}
-          onPress={handleStartAssessment}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.ctaText}>Start Assessment</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => router.push("/dashboard")}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.secondaryText}>View Dashboard</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.secondaryButton, { marginTop: 8 }]}
-          onPress={() => router.push("/ai-assistant")}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.secondaryText}>🤖 AI Assistant</Text>
-        </TouchableOpacity>
+        <Button style={styles.ctaButton} onPress={handleStartAssessment}>Take an Assessment</Button>
       </View>
 
       <View style={styles.featuresSection}>
@@ -65,34 +44,34 @@ export default function Home() {
 
         <View style={styles.featureCard}>
           <Text style={styles.featureIcon}>📊</Text>
-          <Text style={styles.featureTitle}>Comprehensive Scoring</Text>
-          <Text style={styles.featureText}>
+          <Typography.H3 style={styles.featureTitle}>Comprehensive Scoring</Typography.H3>
+          <Typography.P style={styles.featureText}>
             100 questions across 10 domains with detailed scoring guidance
-          </Text>
+          </Typography.P>
         </View>
 
         <View style={styles.featureCard}>
           <Text style={styles.featureIcon}>🤖</Text>
-          <Text style={styles.featureTitle}>AI-Powered Insights</Text>
-          <Text style={styles.featureText}>
+          <Typography.H3 style={styles.featureTitle}>AI-Powered Insights</Typography.H3>
+          <Typography.P style={styles.featureText}>
             ChatGPT-driven recommendations tailored to your results
-          </Text>
+          </Typography.P>
         </View>
 
         <View style={styles.featureCard}>
           <Text style={styles.featureIcon}>📈</Text>
-          <Text style={styles.featureTitle}>Actionable Reports</Text>
-          <Text style={styles.featureText}>
+          <Typography.H3 style={styles.featureTitle}>Actionable Reports</Typography.H3>
+          <Typography.P style={styles.featureText}>
             Detailed analysis with short, medium, and long-term action plans
-          </Text>
+          </Typography.P>
         </View>
 
         <View style={styles.featureCard}>
           <Text style={styles.featureIcon}>🎯</Text>
-          <Text style={styles.featureTitle}>Progress Tracking</Text>
-          <Text style={styles.featureText}>
+          <Typography.H3 style={styles.featureTitle}>Progress Tracking</Typography.H3>
+          <Typography.P style={styles.featureText}>
             Monitor improvement over time with historical comparisons
-          </Text>
+          </Typography.P>
         </View>
       </View>
 
@@ -141,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radius,
     marginBottom: SIZES.small,
     width: "100%",
-    ...SHADOW.lifted,
+  ...SHADOW.elevated,
   },
   ctaText: {
     color: COLORS.surface,
@@ -158,7 +137,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
     width: "100%",
     marginBottom: SIZES.small,
-    ...SHADOW.soft,
+  ...SHADOW.subtle,
   },
   secondaryText: {
     color: COLORS.primary,
@@ -180,7 +159,7 @@ const styles = StyleSheet.create({
     padding: SIZES.medium,
     borderRadius: SIZES.radius,
     marginBottom: SIZES.medium,
-    ...SHADOW.soft,
+  ...SHADOW.subtle,
   },
   featureIcon: {
     fontSize: 32,

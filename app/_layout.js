@@ -1,25 +1,28 @@
-import { Stack, router } from 'expo-router';
+import { Stack, useLocalSearchParams, router } from 'expo-router';
 import { Button } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
+import { ThemeProvider } from 'styled-components/native';
 import { AssessmentProvider } from '../contexts/AssessmentContext';
 import Theme from '../styles/theme';
 
 export default function RootLayout() {
   return (
-    <AssessmentProvider>
-      <Stack
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: Theme.COLORS.primaryDark,
-            ...Theme.SHADOW.soft, // subtle elevation for header
-          },
-          headerTintColor: Theme.COLORS.surface,
-          headerTitleStyle: {
-            fontWeight: "700",
-            fontFamily: Theme.TYPOGRAPHY.fontFamily,
-          },
-        }}
-      >
+    <ThemeProvider theme={Theme}>
+      <AssessmentProvider>
+        <Stack
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: Theme.COLORS.primary,
+              ...Theme.SHADOW.subtle, // subtle elevation for header
+            },
+            headerTintColor: Theme.COLORS.surface,
+            headerTitleStyle: {
+              fontWeight: "700",
+              fontFamily: Theme.TYPOGRAPHY.fontFamily,
+              color: Theme.COLORS.surface,
+            },
+          }}
+        >
         <Stack.Screen
           name="index"
           options={{
@@ -62,7 +65,6 @@ export default function RootLayout() {
             headerShown: true,
           }}
         />
-
         <Stack.Screen
           name="details"
           options={{
@@ -71,6 +73,7 @@ export default function RootLayout() {
           }}
         />
       </Stack>
-    </AssessmentProvider>
+      </AssessmentProvider>
+    </ThemeProvider>
   );
 }

@@ -56,19 +56,19 @@ const { COLORS, SIZES, TYPOGRAPHY, SHADOW } = Theme;
 const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.surface,
-    borderRadius: SIZES.radius,
-    padding: SIZES.large,
-    marginBottom: 18,
+    borderRadius: SIZES.cardRadius,
+    padding: SIZES.md,
+    marginBottom: SIZES.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
-    ...SHADOW.soft,
+    ...SHADOW.subtle,
   },
   questionText: {
-    fontSize: TYPOGRAPHY.h6,
+    fontSize: TYPOGRAPHY.h3,
     fontFamily: TYPOGRAPHY.fontFamily,
-    fontWeight: '600',
+    fontWeight: TYPOGRAPHY.weight.medium,
     color: COLORS.text,
-    marginBottom: SIZES.medium,
+    marginBottom: SIZES.sm,
     lineHeight: 24,
   },
   scoresContainer: {
@@ -88,12 +88,12 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     marginRight: 10,
     marginBottom: 10,
-    ...SHADOW.lifted,
+    ...SHADOW.elevated,
   },
   scoreButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primaryDark,
-    transform: [{ scale: 1.03 }],
+    backgroundColor: COLORS.primaryAccent,
+    borderColor: COLORS.primary,
+    transform: [{ scale: 1.02 }],
   },
   scoreText: {
     fontSize: 16,
@@ -108,9 +108,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   guidanceButtonText: {
-    fontSize: TYPOGRAPHY.label,
+    fontSize: TYPOGRAPHY.small,
     color: COLORS.primary,
-    fontWeight: "700",
+    fontWeight: TYPOGRAPHY.weight.medium,
   },
   guidanceContainer: {
     marginTop: 12,

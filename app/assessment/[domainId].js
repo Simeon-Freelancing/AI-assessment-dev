@@ -7,23 +7,35 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import QuestionCard from "../../components/QuestionCard";
 import { QUESTIONS } from "../../data/questions";
 import { DOMAINS } from "../../data/domains";
 import { getResponses, createResponse, updateResponse } from "../../lib/api";
 import { useAssessment } from "../../contexts/AssessmentContext";
 import Theme from '../../styles/theme';
+import Button from '../../components/ui/Button';
+import Typography from '../../components/ui/Typography';
+import { HeaderBackButton } from "@react-navigation/elements";
 
 export default function DomainAssessment() {
   const params = useLocalSearchParams();
   const router = useRouter();
   const domainIdRaw = params?.domainId;
   const domainIndex = Number(domainIdRaw); // numeric domain index
-  const assessmentId = params?.assessmentId
-    ? Number(params.assessmentId)
-    : null;
+  const assessmentId = params?.assessmentId;
+  const orgId = params?.orgId ? Number(params.orgId) : null;
   const domain = DOMAINS.find((d) => d.id === domainIndex);
+
+  const handleGoBackToDashboard = () => {
+    // 1. Use replace to remove the current assessment screen from the stack.
+    // 2. Specify the dashboard path and pass the required orgId parameter.
+    //    Using router.replace effectively resets the stack back to the dashboard.
+    router.replace({
+      pathname: "/dashboard",
+      params: { orgId: orgId },
+    });
+  };
 
   const { responses, comments, updateResponse, updateComment } =
     useAssessment();
@@ -110,29 +122,59 @@ export default function DomainAssessment() {
       setLoadingSave(false);
     }
   };
-
+  // ...existing code...
   const handlePrevDomain = () => {
     const prev = domainIndex - 1;
     if (prev >= 1) {
-      router.push(
-        `assessment/${prev}${assessmentId ? `?assessmentId=${assessmentId}` : ""}`
-      );
+      router.push({
+        pathname: `/assessment/${prev}`,
+        params: {
+          orgId: orgId,
+          assessmentId: assessmentId,
+        },
+      });
     }
   };
 
   const handleNextDomain = () => {
     const next = domainIndex + 1;
-    // If there is a next domain, navigate. You may want to check DOMAINS length if available.
-    router.push(
-      `assessment/${next}${assessmentId ? `?assessmentId=${assessmentId}` : ""}`
-    );
+    if (next <= DOMAINS.length) {
+      router.push({
+        pathname: `/assessment/${next}`,
+        params: {
+          orgId: orgId,
+          assessmentId: assessmentId,
+        },
+      });
+    } else {
+      // If we've reached the end, go back to dashboard
+      router.replace({
+        pathname: "/dashboard",
+        params: { orgId },
+      });
+    }
   };
+  // ...existing code...
 
   const questions = QUESTIONS[domainIndex] || [];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{domain?.name}</Text>
+      <Stack.Screen
+        options={{
+          title: "Assessment", // You can even make this dynamic if you want
+          headerShown: true,
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor="white"
+              // 👇 THIS IS THE KEY CHANGE
+              onPress={handleGoBackToDashboard}
+            />
+          ),
+        }}
+      />
+      <Typography.H2 style={styles.title}>{domain?.name}</Typography.H2>
       <ScrollView style={styles.questionsContainer}>
         {questions.map((question) => (
           <QuestionCard
@@ -144,15 +186,9 @@ export default function DomainAssessment() {
             onCommentChange={(text) => updateComment(question.id, text)}
           />
         ))}
-        <TouchableOpacity
-          style={[styles.saveButton]}
-          onPress={handleSaveChanges}
-          disabled={loadingSave}
-        >
-          <Text style={styles.saveButtonText}>
-            {loadingSave ? "Saving..." : "Save changes"}
-          </Text>
-        </TouchableOpacity>
+        <Button style={styles.saveButton} onPress={handleSaveChanges} disabled={loadingSave}>
+          {loadingSave ? 'Saving...' : 'Save changes'}
+        </Button>
       </ScrollView>
       <View style={styles.footer}>
         <TouchableOpacity
@@ -208,7 +244,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    ...SHADOW.soft,
+    ...SHADOW.subtle,
   },
   prevButton: {},
   nextButton: {
@@ -229,7 +265,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     alignItems: "center",
     backgroundColor: COLORS.accent,
-    ...SHADOW.lifted,
+    ...SHADOW.elevated,
   },
   saveButtonText: {
     color: COLORS.surface,

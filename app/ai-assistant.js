@@ -4,6 +4,9 @@ import { useAssessment } from '../contexts/AssessmentContext';
 import { calculateOverallScore, calculateDomainScore } from '../utils/scoring';
 import { DOMAINS } from '../data/domains';
 import Theme from '../styles/theme';
+import Input from '../components/ui/Input';
+import Button from '../components/ui/Button';
+import Typography from '../components/ui/Typography';
 
 export default function AIAssistant() {
   const { responses } = useAssessment();
@@ -87,16 +90,14 @@ export default function AIAssistant() {
         ))}
       </ScrollView>
       <View style={styles.inputContainer}>
-        <TextInput
+        <Input
           style={styles.input}
           value={question}
           onChangeText={setQuestion}
           placeholder="Ask me anything about AI readiness..."
           multiline
         />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Text style={styles.sendButtonText}>Send</Text>
-        </TouchableOpacity>
+        <Button style={styles.sendButton} onPress={handleSend}>Send</Button>
       </View>
     </View>
   );
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     padding: SIZES.small,
     borderRadius: SIZES.radius,
     maxWidth: '85%',
-    ...SHADOW.soft,
+    ...SHADOW.subtle,
   },
   userBubble: {
     alignSelf: 'flex-end',
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.small,
     paddingHorizontal: SIZES.large,
     justifyContent: 'center',
-    ...SHADOW.lifted,
+    ...SHADOW.elevated,
   },
   sendButtonText: {
     color: COLORS.surface,

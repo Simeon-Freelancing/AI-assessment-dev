@@ -4,6 +4,9 @@ import { useRouter } from "expo-router";
 import ModalSelector from "react-native-modal-selector";
 import { getOrganizationNames, getOrganization, createOrganization } from "../lib/api";
 import Theme from '../styles/theme';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Typography from '../components/ui/Typography';
 
 export default function Details() {
   const router = useRouter();
@@ -84,21 +87,14 @@ export default function Details() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose Organization</Text>
-      <TouchableOpacity style={styles.optionButton} onPress={handleShowOrgList}>
-        <Text style={styles.optionText}>Select Existing Organization</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.optionButton}
-        onPress={() => setShowNewOrgForm(true)}
-      >
-        <Text style={styles.optionText}>Create New Organization</Text>
-      </TouchableOpacity>
+      <Typography.H1 style={styles.title}>Choose Organization</Typography.H1>
+      <Button style={styles.optionButton} onPress={handleShowOrgList}>Select Existing Organization</Button>
+      <Button style={styles.optionButton} onPress={() => setShowNewOrgForm(true)}>Create New Organization</Button>
 
       {/* Organization List Modal */}
       <Modal visible={showOrgList} animationType="slide">
         <View style={styles.modalContainer}>
-          <TextInput
+          <Input
             style={styles.searchInput}
             placeholder="Search organizations..."
             value={searchQuery}
@@ -113,13 +109,9 @@ export default function Details() {
                   org.name?.toLowerCase().includes(searchQuery.toLowerCase())
                 )
                 .map((org) => (
-                  <TouchableOpacity
-                    key={org.id}
-                    style={styles.orgItem}
-                    onPress={() => handleSelectOrg(org)}
-                  >
-                    <Text style={styles.orgName}>{org.name}</Text>
-                  </TouchableOpacity>
+                  <Button variant="ghost" key={org.id} style={styles.orgItem} onPress={() => handleSelectOrg(org)}>
+                    {org.name}
+                  </Button>
                 ))}
             </ScrollView>
           )}
@@ -135,9 +127,7 @@ export default function Details() {
       {/* Organization Details Modal */}
       <Modal visible={!!selectedOrg} animationType="slide">
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>
-            {selectedOrgDetails?.name}
-          </Text>
+          <Typography.H2 style={styles.modalTitle}>{selectedOrgDetails?.name}</Typography.H2>
           <Text style={styles.detailText}>
             Industry: {selectedOrgDetails?.industry}
           </Text>
@@ -176,19 +166,9 @@ export default function Details() {
         <ScrollView style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Create New Organization</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Organization Name"
-            value={formData.name}
-            onChangeText={(text) => setFormData({ ...formData, name: text })}
-          />
+          <Input style={styles.input} placeholder="Organization Name" value={formData.name} onChangeText={(text) => setFormData({ ...formData, name: text })} />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={formData.email}
-            onChangeText={(text) => setFormData({ ...formData, email: text })}
-          />
+          <Input style={styles.input} placeholder="Email" value={formData.email} onChangeText={(text) => setFormData({ ...formData, email: text })} />
 
           <ModalSelector
             data={industries.map((item, index) => ({
@@ -208,15 +188,7 @@ export default function Details() {
             </View>
           </ModalSelector>
 
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Brief Description"
-            multiline
-            value={formData.description}
-            onChangeText={(text) =>
-              setFormData({ ...formData, description: text })
-            }
-          />
+          <Input style={[styles.input, styles.textArea]} placeholder="Brief Description" multiline value={formData.description} onChangeText={(text) => setFormData({ ...formData, description: text })} />
 
           <ModalSelector
             data={employeeSizes.map((item, index) => ({
@@ -251,19 +223,9 @@ export default function Details() {
             </View>
           </ModalSelector>
 
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={handleCreateOrg}
-          >
-            <Text style={styles.buttonText}>Create Organization</Text>
-          </TouchableOpacity>
+          <Button style={styles.submitButton} onPress={handleCreateOrg}>Create Organization</Button>
 
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowNewOrgForm(false)}
-          >
-            <Text style={styles.buttonText}>Go Back</Text>
-          </TouchableOpacity>
+          <Button variant="ghost" style={styles.closeButton} onPress={() => setShowNewOrgForm(false)}>Go Back</Button>
         </ScrollView>
       </Modal>
     </View>
@@ -290,7 +252,7 @@ const styles = StyleSheet.create({
     padding: SIZES.medium,
     borderRadius: SIZES.small,
     marginBottom: SIZES.small,
-    ...SHADOW.lifted,
+    ...SHADOW.elevated,
   },
   optionText: {
     color: COLORS.surface,
@@ -343,7 +305,7 @@ const styles = StyleSheet.create({
     padding: SIZES.small,
     borderRadius: SIZES.small,
     marginBottom: SIZES.small,
-    ...SHADOW.lifted,
+    ...SHADOW.elevated,
   },
   continueButton: {
     backgroundColor: COLORS.primary,
