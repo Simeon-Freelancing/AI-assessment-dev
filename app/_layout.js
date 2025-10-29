@@ -1,6 +1,5 @@
 import { Stack, useLocalSearchParams, router } from 'expo-router';
-import { Button } from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements";
+import { TouchableOpacity, Text } from "react-native";
 import { ThemeProvider } from 'styled-components/native';
 import { AssessmentProvider } from '../contexts/AssessmentContext';
 import Theme from '../styles/theme';
@@ -43,10 +42,14 @@ export default function RootLayout() {
             title: "Dashboard",
             headerLeft: () => {
               return (
-                <HeaderBackButton
-                  tintColor="white" // or 'white' depending on your theme
-                  onPress={() => router.replace("/")} // 👈 custom navigation
-                />
+                <TouchableOpacity
+                  onPress={() => router.replace("/")}
+                  style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Go back"
+                >
+                  <Text style={{ color: Theme.COLORS.surface, fontSize: 20 }}>←</Text>
+                </TouchableOpacity>
               );
             },
           }}
