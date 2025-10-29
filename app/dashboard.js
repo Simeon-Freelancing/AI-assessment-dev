@@ -62,10 +62,8 @@ export default function Dashboard({ route }) {
           <Text>Loading...</Text>
         ) : hasStartedAssessment ? (
           <View style={styles.scoreSection}>
-            <ScoreGauge score={overallScore} size={140} />
-            <View style={styles.scoreInfo}>
-              <Text style={styles.readinessLabel}>Readiness Level</Text>
-                <Text
+            <View style={styles.scoreInfo}>               
+               <Text
                   style={[styles.readinessLevel, { color: readinessLevel.color }]}
                 >
                   {readinessLevel.level}
@@ -108,7 +106,7 @@ export default function Dashboard({ route }) {
 
       {hasStartedAssessment && (
         <View style={styles.actionsSection}>
-          <Button style={[styles.actionButton, styles.secondaryAction]} onPress={() => router.push(`/assessment/1?orgId=${orgId}&assessmentId=${assessment?.id ?? ''}`)}>
+          <Button style={[styles.actionButton]} onPress={() => router.push(`/assessment/1?orgId=${orgId}&assessmentId=${assessment?.id ?? ''}`)}>
             Continue Assessment
           </Button>
         </View>
