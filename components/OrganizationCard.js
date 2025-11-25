@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Theme from '../styles/theme';
-import Typography from './ui/Typography';
 import Button from './ui/Button';
 
 export default function OrganizationCard({ org, onEdit, onStartAssessment, onViewReport }) {

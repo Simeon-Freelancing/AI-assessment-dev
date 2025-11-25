@@ -1,10 +1,9 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { getAssessment, getResponses, createAssessment } from '../lib/api';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { getAssessment, getResponses, createAssessment, updateAssessment } from '../lib/api';
 import { DOMAINS } from '../data/domains';
 import DomainCard from '../components/DomainCard';
-import ScoreGauge from '../components/ScoreGauge';
 import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '../utils/scoring';
 import Theme from '../styles/theme';
 import Typography from '../components/ui/Typography';
@@ -19,23 +18,26 @@ export default function Dashboard({ route }) {
   const [responses, setResponses] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      if (!orgId) {
-        setLoading(false);
-        return;
-      }
-      const { data: assessments } = await getAssessment(orgId, "in-progress");
-      console.log("The assessments are: ", assessments[0]);
-      if (assessments && assessments.length > 0) {
-        setAssessment(assessments[0]);
-        const { data: resp } = await getResponses(assessments[0].id);
-        setResponses(resp || []);
-      }
+  const fetchData = async () => {
+    if (!orgId) {
       setLoading(false);
-    };
-    fetchData();
-  }, [orgId]);
+      return;
+    }
+    const { data: assessments } = await getAssessment(orgId, "in-progress");
+    console.log("The assessments are: ", assessments[0]);
+    if (assessments && assessments.length > 0) {
+      setAssessment(assessments[0]);
+      const { data: resp } = await getResponses(assessments[0].id);
+      setResponses(resp || []);
+    }
+    setLoading(false);
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [orgId])
+  );
 
   const handleStartAssessment = async () => {
     if (!orgId) return;
@@ -48,11 +50,36 @@ export default function Dashboard({ route }) {
     }
   };
   
-  console.log("The assessment is ", assessment);
   const hasStartedAssessment = assessment ? assessment.status : null
   const hasResponses = responses.length > 0;
   const overallScore = hasResponses ? calculateOverallScore(responses) : 0;
   const readinessLevel = getReadinessLevel(overallScore);
+
+  // Auto-complete assessment when all 100 questions are answered
+  React.useEffect(() => {
+    const completeAssessmentIfDone = async () => {
+      if (
+        assessment &&
+        assessment.status === "in-progress" &&
+        responses.length === 100
+      ) {
+        try {
+          await updateAssessment(assessment.id, {
+            status: "completed",
+            overall_score: overallScore,
+          });
+          setAssessment(prev => ({
+            ...prev,
+            status: "completed",
+            overall_score: overallScore,
+          }));
+        } catch (err) {
+          console.warn("Failed to complete assessment:", err);
+        }
+      }
+    };
+    completeAssessmentIfDone();
+  }, [responses.length, assessment, overallScore]);
 
   return (
     <ScrollView style={styles.container}>

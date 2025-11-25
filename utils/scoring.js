@@ -1,16 +1,35 @@
 export const calculateDomainScore = (responses, domainId) => {
-  const domainResponses = Object.entries(responses).filter(([qId]) => {
-    const id = parseInt(qId);
-    return id >= (domainId - 1) * 10 + 1 && id <= domainId * 10;
-  });
+  // Handle both object format (from context) and array format (from API)
+  let domainResponses = [];
+  
+  if (Array.isArray(responses)) {
+    // API array format: { id, assessment_id, question_id, score, comments }
+    domainResponses = responses.filter((r) => {
+      if (!r.question_id || r.score == null) return false;
+      return r.question_id >= (domainId - 1) * 10 + 1 && r.question_id <= domainId * 10;
+    });
+  } else {
+    // Object format: { questionId: score }
+    domainResponses = Object.entries(responses).filter(([qId]) => {
+      const id = parseInt(qId);
+      return id >= (domainId - 1) * 10 + 1 && id <= domainId * 10;
+    });
+  }
   
   if (domainResponses.length === 0) return 0;
   
-  const sum = domainResponses.reduce((acc, [, score]) => acc + score, 0);
+  const sum = domainResponses.reduce((acc, item) => {
+    const score = Array.isArray(responses) ? item.score : item[1];
+    return acc + score;
+  }, 0);
   return sum / domainResponses.length;
 };
 
 export const calculateOverallScore = (responses) => {
+  // Handle both array and object formats
+  if (Array.isArray(responses) && responses.length === 0) return 0;
+  if (!Array.isArray(responses) && Object.keys(responses).length === 0) return 0;
+  
   const domainScores = [];
   for (let i = 1; i <= 10; i++) {
     const score = calculateDomainScore(responses, i);
