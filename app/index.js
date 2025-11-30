@@ -1,13 +1,15 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
   View,
   Text,
   Image,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAssessment } from "../contexts/AssessmentContext";
+import { useAuth } from "../contexts/AuthContext";
 import Theme from "../styles/theme";
 import Typography from '../components/ui/Typography';
 import Button from '../components/ui/Button';
@@ -15,14 +17,38 @@ import Button from '../components/ui/Button';
 export default function Home() {
   const router = useRouter();
   const { startAssessment } = useAssessment();
+  const { logout, isAuthenticated, isLoading } = useAuth(); 
 
   const handleStartAssessment = () => {
     startAssessment();
     router.push("/details");
   };
 
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/login");
+  };
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      // if not authenticated, force to login
+      router.replace("/login");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.headerWithLogout}>
+        <Typography.H1 style={styles.heroTitle}>Measure Your AI Future</Typography.H1>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={handleLogout}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.logoutText}>Sign Out</Text>
+        </TouchableOpacity>
+      </View>
+
       <Image
         source={{
           uri: "https://d64gsuwffb70l.cloudfront.net/68e62841fcfbb0441502bbc7_1759914103380_1a932241.webp",
@@ -31,7 +57,6 @@ export default function Home() {
       />
 
       <View style={styles.heroContent}>
-        <Typography.H1 style={styles.heroTitle}>Measure Your AI Future</Typography.H1>
         <Typography.P style={styles.heroSubtitle}>
           Comprehensive AI readiness evaluation across 10 critical domains
         </Typography.P>
@@ -91,20 +116,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.card,
   },
+  headerWithLogout: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.large,
+    paddingTop: SIZES.medium,
+    paddingBottom: SIZES.small,
+  },
   heroImage: {
     width: "100%",
     height: 200,
   },
+  heroTitle: {
+    fontSize: 24,
+    fontWeight: "800",
+    color: COLORS.primaryDark,
+  },
+  logoutButton: {
+    paddingVertical: SIZES.small,
+    paddingHorizontal: SIZES.medium,
+    backgroundColor: COLORS.danger,
+    borderRadius: SIZES.small,
+  },
+  logoutText: {
+    color: COLORS.surface,
+    fontWeight: '700',
+    fontSize: TYPOGRAPHY.body,
+  },
   heroContent: {
     padding: SIZES.large,
     alignItems: "center",
-  },
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: COLORS.primaryDark,
-    textAlign: "center",
-    marginBottom: SIZES.small,
   },
   heroSubtitle: {
     fontSize: TYPOGRAPHY.body,

@@ -17,7 +17,8 @@ export default function Dashboard({ route }) {
   const [assessment, setAssessment] = React.useState(null);
   const [responses, setResponses] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-
+  
+  const completeCalledRef = React.useRef(false);
   const fetchData = async () => {
     if (!orgId) {
       setLoading(false);
@@ -26,10 +27,14 @@ export default function Dashboard({ route }) {
     const { data: assessments } = await getAssessment(orgId, "in-progress");
     console.log("The assessments are: ", assessments[0]);
     if (assessments && assessments.length > 0) {
-      setAssessment(assessments[0]);
-      const { data: resp } = await getResponses(assessments[0].id);
-      setResponses(resp || []);
+      // Only replace local assessment/responses if it's a different assessment
+      const newA = assessments[0];
+      if (!assessment || assessment.id !== newA.id) {
+        setAssessment(newA);
+        const { data: resp } = await getResponses(newA.id);
+        setResponses(resp || []);
     }
+  }
     setLoading(false);
   };
 
@@ -50,36 +55,34 @@ export default function Dashboard({ route }) {
     }
   };
   
-  const hasStartedAssessment = assessment ? assessment.status : null
+  const hasStartedAssessment =
+    (assessment?.status !== "completed" ? assessment?.status : null) ?? null;
   const hasResponses = responses.length > 0;
   const overallScore = hasResponses ? calculateOverallScore(responses) : 0;
   const readinessLevel = getReadinessLevel(overallScore);
 
   // Auto-complete assessment when all 100 questions are answered
-  React.useEffect(() => {
-    const completeAssessmentIfDone = async () => {
-      if (
-        assessment &&
-        assessment.status === "in-progress" &&
-        responses.length === 100
-      ) {
-        try {
-          await updateAssessment(assessment.id, {
-            status: "completed",
-            overall_score: overallScore,
-          });
-          setAssessment(prev => ({
-            ...prev,
-            status: "completed",
-            overall_score: overallScore,
-          }));
-        } catch (err) {
-          console.warn("Failed to complete assessment:", err);
-        }
+  const handleCompleteAssessment = async () => {
+    if (!assessment || assessment.status !== "in-progress") return;
+    if (completeCalledRef.current) return;
+    completeCalledRef.current = true;
+    try {
+      if (assessment?.id) {
+        await updateAssessment(assessment.id, {
+          status: "completed",
+          // overall_score: overallScore,
+        });
+        setAssessment(prev => ({
+          ...prev,
+          status: "completed",
+          overall_score: overallScore,
+        }));
       }
-    };
-    completeAssessmentIfDone();
-  }, [responses.length, assessment, overallScore]);
+    } catch (err) {
+      console.warn("Failed to complete assessment:", err);
+      completeCalledRef.current = false;
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -136,6 +139,14 @@ export default function Dashboard({ route }) {
           <Button style={[styles.actionButton]} onPress={() => router.push(`/assessment/1?orgId=${orgId}&assessmentId=${assessment?.id ?? ''}`)}>
             Continue Assessment
           </Button>
+           {responses.length === 100 && assessment.status === "in-progress" && (
+            <Button
+              style={[styles.actionButton, { backgroundColor: '#27ae60' }]}
+              onPress={handleCompleteAssessment}
+            >
+              Complete Assessment
+            </Button>
+          )}
         </View>
       )}
     </ScrollView>
