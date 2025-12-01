@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, TextInput, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import ModalSelector from "react-native-modal-selector";
-import { getOrganizationNames, getOrganization, createOrganization } from "../lib/api";
-import Theme from '../styles/theme';
-import Button from '../components/ui/Button';
-import Input from '../components/ui/Input';
-import Typography from '../components/ui/Typography';
+import { getOrganizationNames, getOrganization, createOrganization } from "../../lib/api";
+import Theme from '../../styles/theme';
+import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
+import Typography from '../../components/ui/Typography';
 
 export default function Details() {
   const router = useRouter();

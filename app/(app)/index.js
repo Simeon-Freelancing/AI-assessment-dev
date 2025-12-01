@@ -8,11 +8,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useAssessment } from "../contexts/AssessmentContext";
-import { useAuth } from "../contexts/AuthContext";
-import Theme from "../styles/theme";
-import Typography from '../components/ui/Typography';
-import Button from '../components/ui/Button';
+import { useAssessment } from "../../contexts/AssessmentContext";
+import { useAuth } from "../../contexts/AuthContext";
+import Theme from "../../styles/theme";
+import Typography from '../../components/ui/Typography';
+import Button from '../../components/ui/Button';
 
 export default function Home() {
   const router = useRouter();
@@ -28,13 +28,6 @@ export default function Home() {
     await logout();
     router.replace("/login");
   };
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      // if not authenticated, force to login
-      router.replace("/login");
-    }
-  }, [isLoading, isAuthenticated, router]);
 
   return (
     <ScrollView style={styles.container}>

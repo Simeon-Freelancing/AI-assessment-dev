@@ -8,11 +8,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../contexts/AuthContext';
-import Theme from '../styles/theme';
-import Typography from '../components/ui/Typography';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
+import Theme from '../../styles/theme';
+import Typography from '../../components/ui/Typography';
+import Input from '../../components/ui/Input';
+import Button from '../../components/ui/Button';
 
 export default function Login() {
   const router = useRouter();

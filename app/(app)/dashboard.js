@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
-import { getAssessment, getResponses, createAssessment, updateAssessment } from '../lib/api';
-import { DOMAINS } from '../data/domains';
-import DomainCard from '../components/DomainCard';
-import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '../utils/scoring';
-import Theme from '../styles/theme';
-import Typography from '../components/ui/Typography';
-import Button from '../components/ui/Button';
+import { getAssessment, getResponses, createAssessment, updateAssessment } from '../../lib/api';
+import { DOMAINS } from '../../data/domains';
+import DomainCard from '../../components/DomainCard';
+import { calculateDomainScore, calculateOverallScore, getReadinessLevel } from '../../utils/scoring';
+import Theme from '../../styles/theme';
+import Typography from '../../components/ui/Typography';
+import Button from '../../components/ui/Button';
 
 export default function Dashboard({ route }) {
   const router = useRouter();

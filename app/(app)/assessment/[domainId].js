@@ -8,14 +8,14 @@ import {
   Alert,
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import QuestionCard from "../../components/QuestionCard";
-import { QUESTIONS } from "../../data/questions";
-import { DOMAINS } from "../../data/domains";
-import { getResponses, createResponse, updateResponse } from "../../lib/api";
-import { useAssessment } from "../../contexts/AssessmentContext";
-import Theme from '../../styles/theme';
-import Button from '../../components/ui/Button';
-import Typography from '../../components/ui/Typography';
+import QuestionCard from "../../../components/QuestionCard";
+import { QUESTIONS } from "../../../data/questions";
+import { DOMAINS } from "../../../data/domains";
+import { getResponses, createResponse, updateResponse } from "../../../lib/api";
+import { useAssessment } from "../../../contexts/AssessmentContext";
+import Theme from '../../../styles/theme';
+import Button from '../../../components/ui/Button';
+import Typography from '../../../components/ui/Typography';
 import { HeaderBackButton } from "@react-navigation/elements";
 
 export default function DomainAssessment() {
