@@ -7,7 +7,7 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitializingAuth, setIsInitializingAuth] = useState(true);
   const [pendingEmail, setPendingEmail] = useState(null);
   const [authError, setAuthError] = useState(null);
 
@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
       } catch (err) {
         console.log("Session load error:", err);
       } finally {
-        setIsLoading(false);
+        setIsInitializingAuth(false);
       }
     };
 
@@ -125,7 +125,7 @@ export function AuthProvider({ children }) {
       value={{
         user,
         session,
-        isLoading,
+        isInitializingAuth,
         pendingEmail,
         authError,
         requestOtp,

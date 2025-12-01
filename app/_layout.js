@@ -7,9 +7,9 @@ import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import Theme from '../styles/theme';
 
 function RootLayoutNav() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isInitializingAuth } = useAuth();
 
-  if (isLoading) {
+  if (isInitializingAuth) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.COLORS.card }}>
         <ActivityIndicator size="large" color={Theme.COLORS.primary} />
