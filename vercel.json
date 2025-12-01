@@ -1,14 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/manifest.json",
-      "destination": "/manifest.json"
-    },
-    {
-      "source": "/favicon.ico",
-      "destination": "/favicon.ico"
-    },
-    {
       "source": "/_next/:path*",
       "destination": "/_next/:path*"
     },
