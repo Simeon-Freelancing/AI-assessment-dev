@@ -86,11 +86,6 @@ export default function VerifyToken() {
     // Only allow digits, max 6 characters
     const cleaned = text.replace(/\D/g, '').slice(0, 6);
     setToken(cleaned);
-
-    // Auto-submit if 6 digits entered
-    if (cleaned.length === 6) {
-      handleVerifyOtp();
-    }
   };
 
   const displayError = localError || authError;

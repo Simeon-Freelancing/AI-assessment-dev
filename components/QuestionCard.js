@@ -10,41 +10,46 @@ export default function QuestionCard({ question, currentScore, onScoreChange }) 
   return (
     <View style={styles.card}>
       <Text style={styles.questionText}>{question.text}</Text>
-      
+
       <View style={styles.scoresContainer}>
         {scores.map((score) => (
           <TouchableOpacity
             key={score}
             style={[
               styles.scoreButton,
-              currentScore === score && styles.scoreButtonActive
+              currentScore === score && styles.scoreButtonActive,
             ]}
             onPress={() => onScoreChange(score)}
             activeOpacity={0.8}
           >
-            <Text style={[
-              styles.scoreText,
-              currentScore === score && styles.scoreTextActive
-            ]}>
+            <Text
+              style={[
+                styles.scoreText,
+                currentScore === score && styles.scoreTextActive,
+              ]}
+            >
               {score}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={() => setShowGuidance(!showGuidance)}
         style={styles.guidanceButton}
         activeOpacity={0.8}
       >
         <Text style={styles.guidanceButtonText}>
-          {showGuidance ? '▼ Hide Guidance' : '▶ Show Scoring Guidance'}
+          {showGuidance ? "▼ Hide Guidance" : "▶ Show Scoring Guidance"}
         </Text>
       </TouchableOpacity>
 
       {showGuidance && (
         <View style={styles.guidanceContainer}>
-          <Text style={styles.guidanceText}>{question.guidance}</Text>
+          <Text style={styles.guidanceText}>
+            1-2: Non-existent | 3-4: Foundational | 5-6: Standardized | 7-8:
+            Managed/Quantified | 9-10: Fully integrated
+          </Text>
         </View>
       )}
     </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import Button from '../components/ui/Button';
 
 export default function Login() {
   const router = useRouter();
-  const { requestOtp, authError, clearError } = useAuth();
+  const { requestOtp, authError, clearError, isAuthenticated } = useAuth();
   
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +47,12 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, router]);
 
   const displayError = localError || authError;
 
